@@ -3,180 +3,272 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تنزيلات طرطوس - منصة عروض التجار</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <title>تنزيلات طرطوس - ألبسة ومشتقاتها</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style>
-        body { font-family: 'Tajawal', sans-serif; }
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
+        body { font-family: 'Cairo', sans-serif; background-color: #121212; color: #e5e7eb; }
+        .category-pill.active { background-color: #d97706; color: #fff; border-color: #d97706; }
     </style>
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col justify-between">
-    <header class="bg-slate-800 border-b border-slate-700 p-4 shadow-md sticky top-0 z-50">
-        <div class="max-w-4xl mx-auto flex justify-between items-center">
-            <h1 class="text-xl font-black text-amber-400">🏷️ تنزيلات طرطوس</h1>
-            <button onclick="openMerchantModal()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-4 py-2 rounded-xl text-sm transition shadow-lg">لوحة التاجر 🔐</button>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-zinc-900 border-b border-zinc-800 sticky top-0 z-50 px-4 py-3 flex justify-between items-center shadow-md">
+        <div class="flex items-center gap-2 cursor-pointer" onclick="resetFilters()">
+            <span class="text-2xl">👔</span>
+            <h1 class="text-xl font-bold text-amber-500 tracking-wide">تنزيلات طرطوس للألبسة</h1>
         </div>
+        <button onclick="openMerchantModal()" class="bg-amber-600 hover:bg-amber-500 text-zinc-950 font-bold px-4 py-2 rounded-xl text-sm transition flex items-center gap-1.5 shadow">
+            <span>🔑</span> لوحة التاجر
+        </button>
     </header>
 
-    <main class="max-w-4xl mx-auto p-4 w-full flex-grow">
-        <div class="mb-6">
-            <input type="text" id="searchInput" oninput="filterDeals()" placeholder="ابحث عن منتج، متجر، أو تخفيض..." class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-amber-500 transition">
+    <!-- Main Content -->
+    <main class="flex-1 max-w-5xl w-full mx-auto p-4 space-y-6">
+        
+        <!-- Search and Filter Bar -->
+        <div class="space-y-3">
+            <div class="relative">
+                <input type="text" id="searchInput" oninput="filterDeals()" placeholder="ابحث عن قطعة، متجر، أو عرض ألبسة..." 
+                    class="w-full bg-zinc-900 border border-zinc-800 rounded-2xl py-3 px-4 pr-11 text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-amber-500 transition">
+                <span class="absolute right-4 top-3.5 text-zinc-500">🔍</span>
+            </div>
+
+            <!-- Categories Pills (Clothing Only) -->
+            <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-none" id="categoryPills">
+                <button onclick="filterByCategory('الكل')" class="category-pill active whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-semibold bg-zinc-900 border border-zinc-800 text-zinc-300 transition">الكل</button>
+                <button onclick="filterByCategory('ألبسة رجالية')" class="category-pill whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-semibold bg-zinc-900 border border-zinc-800 text-zinc-300 transition">👔 ألبسة رجالية</button>
+                <button onclick="filterByCategory('ألبسة نسائية')" class="category-pill whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-semibold bg-zinc-900 border border-zinc-800 text-zinc-300 transition">👗 ألبسة نسائية</button>
+                <button onclick="filterByCategory('ألبسة أطفال')" class="category-pill whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-semibold bg-zinc-900 border border-zinc-800 text-zinc-300 transition">🧒 ألبسة أطفال</button>
+                <button onclick="filterByCategory('أحذية وحقائب')" class="category-pill whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-semibold bg-zinc-900 border border-zinc-800 text-zinc-300 transition">👞 أحذية وحقائب</button>
+                <button onclick="filterByCategory('ألبسة رياضية')" class="category-pill whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-semibold bg-zinc-900 border border-zinc-800 text-zinc-300 transition">⚽ ألبسة رياضية</button>
+            </div>
         </div>
-        <div id="dealsContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <p class="text-center text-slate-400 col-span-full py-10">جاري تحميل أحدث العروض في طرطوس...</p>
+
+        <!-- Deals Grid -->
+        <div id="dealsContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            <!-- Dynamic Content -->
         </div>
     </main>
 
-    <!-- Modal for Merchant -->
-    <div id="merchantModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-slate-800 border border-slate-700 w-full max-w-md rounded-2xl p-6 shadow-2xl relative">
-            <button onclick="closeMerchantModal()" class="absolute top-4 left-4 text-slate-400 hover:text-white font-bold">✕</button>
-            <div id="authView">
-                <h2 class="text-lg font-bold mb-4 text-amber-400">تسجيل دخول التاجر</h2>
-                <p class="text-xs text-slate-400 mb-4">أدخل الرمز السري الخاص بمتجرك لإدارة العروض.</p>
-                <input type="password" id="pinInput" placeholder="الرمز السري (PIN)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 mb-4 text-sm focus:outline-none focus:border-amber-500">
-                <button onclick="verifyPin()" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-3 rounded-xl transition">دخول</button>
-            </div>
-            <div id="dashboardView" class="hidden">
-                <h2 class="text-lg font-bold mb-4 text-amber-400">إضافة عرض جديد</h2>
-                <input type="text" id="itemStore" placeholder="اسم المحل (مثال: محلات النور - شارع الثورة)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 mb-3 text-sm">
-                <input type="text" id="itemTitle" placeholder="اسم المنتج والعرض (مثال: بنطال جينز بخصم 30%)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 mb-3 text-sm">
-                <input type="text" id="itemPrice" placeholder="السعر بعد التخفيض (مثال: 75 ألف ليرة)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 mb-3 text-sm">
-                <button onclick="publishDeal()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold py-3 rounded-xl transition mb-2">نشر العرض فوراً</button>
-                <button onclick="logoutMerchant()" class="w-full bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 font-bold py-2 rounded-xl text-xs transition">خروج</button>
+    <!-- Merchant PIN Modal -->
+    <div id="pinModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 max-w-sm w-full space-y-4 shadow-2xl">
+            <h3 class="text-lg font-bold text-amber-500 text-center">دخول لوحة تحكم التجار</h3>
+            <p class="text-xs text-zinc-400 text-center">أدخل رمز المرور الخاص باللوحة (1234 أو 2026)</p>
+            <input type="password" id="pinInput" placeholder="رمز المرور" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl py-2.5 px-4 text-center text-xl tracking-widest text-zinc-100 focus:outline-none focus:border-amber-500">
+            <div class="flex gap-2 pt-2">
+                <button onclick="verifyPin()" class="flex-1 bg-amber-600 hover:bg-amber-500 text-zinc-950 font-bold py-2.5 rounded-xl transition">دخول</button>
+                <button onclick="closePinModal()" class="flex-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold py-2.5 rounded-xl transition">إلغاء</button>
             </div>
         </div>
     </div>
 
-    <footer class="bg-slate-800 border-t border-slate-700 p-4 text-center text-xs text-slate-400">
-        منصة تنزيلات طرطوس الحية © 2026 - صُممت لأجل أهل طرطوس الأحباء ❤️
+    <!-- Merchant Dashboard Modal -->
+    <div id="dashboardModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50 p-4 overflow-y-auto">
+        <div class="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 max-w-lg w-full space-y-5 my-8 shadow-2xl">
+            <div class="flex justify-between items-center border-b border-zinc-800 pb-3">
+                <h3 class="text-lg font-bold text-amber-500">إضافة عرض ألبسة جديد</h3>
+                <button onclick="closeDashboardModal()" class="text-zinc-400 hover:text-white text-xl">✕</button>
+            </div>
+
+            <!-- Add Deal Form -->
+            <form id="dealForm" onsubmit="saveDeal(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-400 mb-1">اسم المتجر / المحل</label>
+                    <input type="text" id="storeName" required placeholder="مثال: بوتيك الشام للألبسة" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl py-2 px-3 text-sm text-zinc-100 focus:outline-none focus:border-amber-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-400 mb-1">اسم القطعة أو العرض</label>
+                    <input type="text" id="dealTitle" required placeholder="مثال: خصم 30% على الجواكت الشتوية" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl py-2 px-3 text-sm text-zinc-100 focus:outline-none focus:border-amber-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-400 mb-1">قسم الألبسة</label>
+                    <select id="dealCategory" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl py-2 px-3 text-sm text-zinc-100 focus:outline-none focus:border-amber-500">
+                        <option value="ألبسة رجالية">👔 ألبسة رجالية</option>
+                        <option value="ألبسة نسائية">👗 ألبسة نسائية</option>
+                        <option value="ألبسة أطفال">🧒 ألبسة أطفال</option>
+                        <option value="أحذية وحقائب">👞 أحذية وحقائب</option>
+                        <option value="ألبسة رياضية">⚽ ألبسة رياضية</option>
+                    </select>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-zinc-400 mb-1">السعر قبل الخصم (اختياري)</label>
+                        <input type="text" id="oldPrice" placeholder="مثال: 75,000 ل.س" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl py-2 px-3 text-sm text-zinc-100 focus:outline-none focus:border-amber-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-zinc-400 mb-1">السعر الحالي / بعد الخصم</label>
+                        <input type="text" id="newPrice" required placeholder="مثال: 50,000 ل.س" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl py-2 px-3 text-sm text-zinc-100 focus:outline-none focus:border-amber-500">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-400 mb-1">تفاصيل القياسات أو العنوان ورقم التواصل</label>
+                    <textarea id="dealDesc" rows="2" placeholder="متوفر مقاسات S/M/L، العنوان: شارع الثورة..." class="w-full bg-zinc-950 border border-zinc-800 rounded-xl py-2 px-3 text-sm text-zinc-100 focus:outline-none focus:border-amber-500"></textarea>
+                </div>
+                <button type="submit" class="w-full bg-amber-600 hover:bg-amber-500 text-zinc-950 font-bold py-2.5 rounded-xl transition shadow">نشر العرض في السوق</button>
+            </form>
+
+            <!-- Current Deals Management -->
+            <div class="border-t border-zinc-800 pt-4 space-y-3">
+                <h4 class="text-sm font-bold text-zinc-300">عروض الألبسة الحالية</h4>
+                <div id="merchantDealsList" class="space-y-2 max-h-48 overflow-y-auto">
+                    <!-- Dynamic list for deletion -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="py-6 text-center text-xs text-zinc-500 border-t border-zinc-800/60 mt-auto">
+        جميع الحقوق محفوظة © تنزيلات طرطوس للألبسة 2026
     </footer>
 
-    <!-- Firebase SDKs -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyDummyKeyForTartusPlatform",
-            authDomain: "tanzilat-tartus.firebaseapp.com",
-            projectId: "tanzilat-tartus",
-            storageBucket: "tanzilat-tartus.appspot.com",
-            messagingSenderId: "123456789",
-            appId: "1:123456789:web:abcdef"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        window.db = db;
-        window.collection = collection;
-        window.addDoc = addDoc;
-        window.getDocs = getDocs;
-        window.query = query;
-        window.orderBy = orderBy;
-
-        loadDeals();
-    </script>
-
+    <!-- JavaScript Logic -->
     <script>
-        let allDeals = [];
+        let deals = JSON.parse(localStorage.getItem('tanzilat_clothing_deals')) || [];
+        let currentCategory = 'الكل';
 
-        function openMerchantModal() {
-            document.getElementById('merchantModal').classList.remove('hidden');
-        }
-
-        function closeMerchantModal() {
-            document.getElementById('merchantModal').classList.add('hidden');
-        }
-
-        function verifyPin() {
-            const pin = document.getElementById('pinInput').value;
-            if (pin === "2026" || pin === "1234" || pin.length >= 3) {
-                document.getElementById('authView').classList.add('hidden');
-                document.getElementById('dashboardView').classList.remove('hidden');
-            } else {
-                alert('الرمز السري غير صحيح!');
-            }
-        }
-
-        function logoutMerchant() {
-            document.getElementById('dashboardView').classList.add('hidden');
-            document.getElementById('authView').classList.remove('hidden');
-            document.getElementById('pinInput').value = '';
-        }
-
-        async function publishDeal() {
-            const store = document.getElementById('itemStore').value;
-            const title = document.getElementById('itemTitle').value;
-            const price = document.getElementById('itemPrice').value;
-
-            if (!store || !title || !price) {
-                alert('الرجاء تعبئة كافة الحقول!');
-                return;
-            }
-
-            try {
-                await window.addDoc(window.collection(window.db, "deals"), {
-                    store: store,
-                    title: title,
-                    price: price,
-                    createdAt: new Date()
-                });
-                alert('تم نشر العرض بنجاح في طرطوس!');
-                document.getElementById('itemStore').value = '';
-                document.getElementById('itemTitle').value = '';
-                document.getElementById('itemPrice').value = '';
-                closeMerchantModal();
-                loadDeals();
-            } catch (e) {
-                console.error(e);
-                alert('حدث خطأ أثناء النشر، تأكد من اتصال الإنترنت.');
-            }
-        }
-
-        async function loadDeals() {
+        function renderDeals() {
             const container = document.getElementById('dealsContainer');
-            try {
-                const q = window.query(window.collection(window.db, "deals"), window.orderBy("createdAt", "desc"));
-                const querySnapshot = await window.getDocs(q);
-                allDeals = [];
-                querySnapshot.forEach((doc) => {
-                    allDeals.push(doc.data());
-                });
+            const searchVal = document.getElementById('searchInput').value.toLowerCase();
 
-                renderDeals(allDeals);
-            } catch (e) {
-                console.error(e);
-                container.innerHTML = `<p class="text-center text-rose-400 col-span-full py-10">عذراً، جاري ربط قاعدة البيانات... تأكد من إنشاء مجموعة deals في فايرستور.</p>`;
-            }
-        }
+            const filtered = deals.filter(deal => {
+                const matchesCategory = currentCategory === 'الكل' || deal.category === currentCategory;
+                const matchesSearch = deal.store.toLowerCase().includes(searchVal) || 
+                                      deal.title.toLowerCase().includes(searchVal) || 
+                                      (deal.desc && deal.desc.toLowerCase().includes(searchVal));
+                return matchesCategory && matchesSearch;
+            });
 
-        function renderDeals(deals) {
-            const container = document.getElementById('dealsContainer');
-            if (deals.length === 0) {
-                container.innerHTML = `<p class="text-center text-slate-400 col-span-full py-10">لا توجد عروض مضافة حالياً. كن أول تاجر يضيف عرضاً!</p>`;
-                return;
-            }
-            container.innerHTML = deals.map(deal => `
-                <div class="bg-slate-800 border border-slate-700 rounded-2xl p-4 shadow-md flex flex-col justify-between">
-                    <div>
-                        <span class="bg-amber-500/10 text-amber-400 text-xs font-bold px-2.5 py-1 rounded-lg">${deal.store}</span>
-                        <h3 class="font-bold text-base mt-2 text-white">${deal.title}</h3>
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full py-16 text-center space-y-3">
+                        <span class="text-4xl">🛍️</span>
+                        <p class="text-zinc-400 text-sm">لا توجد عروض ألبسة مضافة في هذا القسم حالياً. كن أول تاجر يضيف عرضاً!</p>
                     </div>
-                    <div class="mt-4 flex justify-between items-center border-t border-slate-700/60 pt-3">
-                        <span class="text-emerald-400 font-black text-sm">${deal.price}</span>
-                        <span class="text-xs text-slate-500">منطقة طرطوس</span>
+                `;
+                return;
+            }
+
+            container.innerHTML = filtered.map((deal, index) => `
+                <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 flex flex-col justify-between shadow hover:border-amber-500/50 transition">
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-start">
+                            <span class="bg-amber-500/10 text-amber-500 text-[10px] font-bold px-2.5 py-1 rounded-full border border-amber-500/20">${deal.category}</span>
+                            <span class="text-xs text-zinc-400 font-medium">🏪 ${deal.store}</span>
+                        </div>
+                        <h3 class="font-bold text-base text-zinc-100">${deal.title}</h3>
+                        ${deal.desc ? `<p class="text-xs text-zinc-400 leading-relaxed">${deal.desc}</p>` : ''}
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-zinc-800/80 flex justify-between items-center">
+                        <div class="flex items-baseline gap-2">
+                            <span class="text-lg font-black text-amber-500">${deal.newPrice}</span>
+                            ${deal.oldPrice ? `<span class="text-xs text-zinc-500 line-through">${deal.oldPrice}</span>` : ''}
+                        </div>
                     </div>
                 </div>
             `).join('');
         }
 
-        function filterDeals() {
-            const term = document.getElementById('searchInput').value.toLowerCase();
-            const filtered = allDeals.filter(d => d.store.toLowerCase().includes(term) || d.title.toLowerCase().includes(term));
-            renderDeals(filtered);
+        function renderMerchantList() {
+            const list = document.getElementById('merchantDealsList');
+            if (deals.length === 0) {
+                list.innerHTML = `<p class="text-xs text-zinc-500 text-center py-2">لا توجد عروض مضافة بعد.</p>`;
+                return;
+            }
+            list.innerHTML = deals.map((deal, index) => `
+                <div class="flex justify-between items-center bg-zinc-950 p-2.5 rounded-xl border border-zinc-800 text-xs">
+                    <div>
+                        <span class="font-bold text-zinc-200">${deal.store}:</span> 
+                        <span class="text-zinc-400">${deal.title}</span>
+                    </div>
+                    <button onclick="deleteDeal(${index})" class="text-red-400 hover:text-red-300 font-bold px-2 py-1">حذف</button>
+                </div>
+            `).join('');
         }
+
+        function filterByCategory(cat) {
+            currentCategory = cat;
+            document.querySelectorAll('.category-pill').forEach(btn => {
+                if(btn.textContent.includes(cat) || (cat === 'الكل' && btn.textContent === 'الكل')) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+            renderDeals();
+        }
+
+        function filterDeals() {
+            renderDeals();
+        }
+
+        function resetFilters() {
+            document.getElementById('searchInput').value = '';
+            filterByCategory('الكل');
+        }
+
+        function openMerchantModal() {
+            document.getElementById('pinModal').classList.remove('hidden');
+            document.getElementById('pinModal').classList.add('flex');
+            document.getElementById('pinInput').value = '';
+        }
+
+        function closePinModal() {
+            document.getElementById('pinModal').classList.add('hidden');
+            document.getElementById('pinModal').classList.remove('flex');
+        }
+
+        function verifyPin() {
+            const pin = document.getElementById('pinInput').value;
+            if (pin === '1234' || pin === '2026') {
+                closePinModal();
+                document.getElementById('dashboardModal').classList.remove('hidden');
+                document.getElementById('dashboardModal').classList.add('flex');
+                renderMerchantList();
+            } else {
+                alert('رمز المرور غير صحيح! جرب 1234 أو 2026');
+            }
+        }
+
+        function closeDashboardModal() {
+            document.getElementById('dashboardModal').classList.add('hidden');
+            document.getElementById('dashboardModal').classList.remove('flex');
+        }
+
+        function saveDeal(e) {
+            e.preventDefault();
+            const newDeal = {
+                store: document.getElementById('storeName').value,
+                title: document.getElementById('dealTitle').value,
+                category: document.getElementById('dealCategory').value,
+                oldPrice: document.getElementById('oldPrice').value,
+                newPrice: document.getElementById('newPrice').value,
+                desc: document.getElementById('dealDesc').value
+            };
+
+            deals.unshift(newDeal);
+            localStorage.setItem('tanzilat_clothing_deals', JSON.stringify(deals));
+            
+            document.getElementById('dealForm').reset();
+            renderDeals();
+            renderMerchantList();
+            alert('تم نشر العرض بنجاح وأصبح ظاهراً للزبائن!');
+        }
+
+        function deleteDeal(index) {
+            if (confirm('هل أنت متأكد من حذف هذا العرض؟')) {
+                deals.splice(index, 1);
+                localStorage.setItem('tanzilat_clothing_deals', JSON.stringify(deals));
+                renderDeals();
+                renderMerchantList();
+            }
+        }
+
+        // Initial Load
+        renderDeals();
     </script>
 </body>
 </html>
