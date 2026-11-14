@@ -55,9 +55,9 @@
     <!-- Merchant PIN Modal -->
     <div id="pinModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
         <div class="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 max-w-sm w-full space-y-4 shadow-2xl">
-            <h3 class="text-lg font-bold text-amber-500 text-center">دخول لوحة تحكم التجار</h3>
-            <p class="text-xs text-zinc-400 text-center">أدخل رمز المرور الخاص باللوحة (1234 أو 2026)</p>
-            <input type="password" id="pinInput" placeholder="رمز المرور" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl py-2.5 px-4 text-center text-xl tracking-widest text-zinc-100 focus:outline-none focus:border-amber-500">
+            <h3 class="text-lg font-bold text-amber-500 text-center">دخول لوحة تحكم التاجر</h3>
+            <p class="text-xs text-zinc-400 text-center">أدخل رمز المفتاح الخاص بمحلك</p>
+            <input type="password" id="pinInput" placeholder="رمز المرور (PIN)" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl py-2.5 px-4 text-center text-xl tracking-widest text-zinc-100 focus:outline-none focus:border-amber-500">
             <div class="flex gap-2 pt-2">
                 <button onclick="verifyPin()" class="flex-1 bg-amber-600 hover:bg-amber-500 text-zinc-950 font-bold py-2.5 rounded-xl transition">دخول</button>
                 <button onclick="closePinModal()" class="flex-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold py-2.5 rounded-xl transition">إلغاء</button>
@@ -69,7 +69,7 @@
     <div id="dashboardModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50 p-4 overflow-y-auto">
         <div class="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 max-w-lg w-full space-y-5 my-8 shadow-2xl">
             <div class="flex justify-between items-center border-b border-zinc-800 pb-3">
-                <h3 class="text-lg font-bold text-amber-500">إضافة عرض ألبسة جديد</h3>
+                <h3 id="dashboardTitle" class="text-lg font-bold text-amber-500">لوحة تحكم التاجر</h3>
                 <button onclick="closeDashboardModal()" class="text-zinc-400 hover:text-white text-xl">✕</button>
             </div>
 
@@ -77,7 +77,7 @@
             <form id="dealForm" onsubmit="saveDeal(event)" class="space-y-4">
                 <div>
                     <label class="block text-xs font-semibold text-zinc-400 mb-1">اسم المتجر / المحل</label>
-                    <input type="text" id="storeName" required placeholder="مثال: بوتيك الشام للألبسة" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl py-2 px-3 text-sm text-zinc-100 focus:outline-none focus:border-amber-500">
+                    <input type="text" id="storeName" readonly class="w-full bg-zinc-950/60 border border-zinc-800 rounded-xl py-2 px-3 text-sm text-amber-400 font-bold cursor-not-allowed">
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-zinc-400 mb-1">اسم القطعة أو العرض</label>
@@ -108,7 +108,7 @@
                     </div>
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-zinc-400 mb-1">تفاصيل القياسات أو العنوان ورقم التواصل</label>
+                    <label class="block text-xs font-semibold text-zinc-400 mb-1">تفاصيل القياسات أو العنوان</label>
                     <textarea id="dealDesc" rows="2" placeholder="متوفر مقاسات S/M/L، العنوان: شارع الثورة..." class="w-full bg-zinc-950 border border-zinc-800 rounded-xl py-2 px-3 text-sm text-zinc-100 focus:outline-none focus:border-amber-500"></textarea>
                 </div>
                 <button type="submit" class="w-full bg-amber-600 hover:bg-amber-500 text-zinc-950 font-bold py-2.5 rounded-xl transition shadow">نشر العرض في السوق</button>
@@ -116,7 +116,7 @@
 
             <!-- Current Deals Management -->
             <div class="border-t border-zinc-800 pt-4 space-y-3">
-                <h4 class="text-sm font-bold text-zinc-300">عروض الألبسة الحالية</h4>
+                <h4 class="text-sm font-bold text-zinc-300">عروض محلك الحالية</h4>
                 <div id="merchantDealsList" class="space-y-2 max-h-48 overflow-y-auto">
                     <!-- Dynamic list for deletion -->
                 </div>
@@ -131,6 +131,15 @@
 
     <!-- JavaScript Logic -->
     <script>
+        // قسّام التجار: يمكنك إضافة أو تعديل محلات التجار وأكوادهم الخاصة ورقم الواتساب هنا بكل سهولة!
+        const merchantsDb = [
+            { pin: "1111", store: "Agha", whatsapp: "963912345678" },
+            { pin: "2222", store: "بوتيك سيفو", whatsapp: "963987654321" },
+            { pin: "3333", store: "جينز حيان", whatsapp: "963911223344" },
+            { pin: "2026", store: "الإدارة العامة (أغآ)", whatsapp: "963900000000" } // مفتاح عام للإدارة
+        ];
+
+        let currentMerchant = null;
         let deals = JSON.parse(localStorage.getItem('tanzilat_clothing_deals')) || [];
         let currentCategory = 'الكل';
 
@@ -169,13 +178,19 @@
                             ${deal.desc ? `<p class="text-xs text-zinc-400 leading-relaxed">${deal.desc}</p>` : ''}
                         </div>
                     </div>
-                    <div class="p-4 pt-0 mt-2">
+                    <div class="p-4 pt-0 mt-2 space-y-3">
                         <div class="pt-3 border-t border-zinc-800/80 flex justify-between items-center">
                             <div class="flex items-baseline gap-2">
                                 <span class="text-lg font-black text-amber-500">${deal.newPrice}</span>
                                 ${deal.oldPrice ? `<span class="text-xs text-zinc-500 line-through">${deal.oldPrice}</span>` : ''}
                             </div>
                         </div>
+                        ${deal.whatsapp ? `
+                            <a href="https://wa.me/${deal.whatsapp}?text=مرحباً، أود الاستفسار عن عرض (${deal.title}) من متجر ${deal.store}" target="_blank" 
+                               class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2 rounded-xl text-xs transition flex items-center justify-center gap-1.5 shadow">
+                                <span>💬</span> تواصل مع التاجر عبر واتساب
+                            </a>
+                        ` : ''}
                     </div>
                 </div>
             `).join('');
@@ -183,22 +198,27 @@
 
         function renderMerchantList() {
             const list = document.getElementById('merchantDealsList');
-            if (deals.length === 0) {
-                list.innerHTML = `<p class="text-xs text-zinc-500 text-center py-2">لا توجد عروض مضافة بعد.</p>`;
+            const merchantDeals = deals.filter(d => currentMerchant.pin === "2026" || d.store === currentMerchant.store);
+            
+            if (merchantDeals.length === 0) {
+                list.innerHTML = `<p class="text-xs text-zinc-500 text-center py-2">لا توجد عروض مضافة من محلك بعد.</p>`;
                 return;
             }
-            list.innerHTML = deals.map((deal, index) => `
-                <div class="flex justify-between items-center bg-zinc-950 p-2.5 rounded-xl border border-zinc-800 text-xs">
-                    <div class="flex items-center gap-2">
-                        ${deal.image ? `<img src="${deal.image}" class="w-8 h-8 rounded-lg object-cover">` : ''}
-                        <div>
-                            <span class="font-bold text-zinc-200">${deal.store}:</span> 
-                            <span class="text-zinc-400">${deal.title}</span>
+            list.innerHTML = merchantDeals.map((deal) => {
+                const globalIndex = deals.findIndex(d => d === deal);
+                return `
+                    <div class="flex justify-between items-center bg-zinc-950 p-2.5 rounded-xl border border-zinc-800 text-xs">
+                        <div class="flex items-center gap-2">
+                            ${deal.image ? `<img src="${deal.image}" class="w-8 h-8 rounded-lg object-cover">` : ''}
+                            <div>
+                                <span class="font-bold text-zinc-200">${deal.store}:</span> 
+                                <span class="text-zinc-400">${deal.title}</span>
+                            </div>
                         </div>
+                        <button onclick="deleteDeal(${globalIndex})" class="text-red-400 hover:text-red-300 font-bold px-2 py-1">حذف</button>
                     </div>
-                    <button onclick="deleteDeal(${index})" class="text-red-400 hover:text-red-300 font-bold px-2 py-1">حذف</button>
-                </div>
-            `).join('');
+                `;
+            }).join('');
         }
 
         function filterByCategory(cat) {
@@ -234,14 +254,19 @@
         }
 
         function verifyPin() {
-            const pin = document.getElementById('pinInput').value;
-            if (pin === '1234' || pin === '2026') {
+            const pin = document.getElementById('pinInput').value.trim();
+            const foundMerchant = merchantsDb.find(m => m.pin === pin);
+
+            if (foundMerchant) {
+                currentMerchant = foundMerchant;
                 closePinModal();
+                document.getElementById('storeName').value = foundMerchant.store;
+                document.getElementById('dashboardTitle').textContent = `لوحة تحكم: ${foundMerchant.store}`;
                 document.getElementById('dashboardModal').classList.remove('hidden');
                 document.getElementById('dashboardModal').classList.add('flex');
                 renderMerchantList();
             } else {
-                alert('رمز المرور غير صحيح! جرب 1234 أو 2026');
+                alert('رمز المفتاح غير صحيح! تأكد من الرقم السري الخاص بمحلك.');
             }
         }
 
@@ -267,7 +292,8 @@
 
         function createAndStoreDeal(imageUrl) {
             const newDeal = {
-                store: document.getElementById('storeName').value,
+                store: currentMerchant.store,
+                whatsapp: currentMerchant.whatsapp,
                 title: document.getElementById('dealTitle').value,
                 category: document.getElementById('dealCategory').value,
                 oldPrice: document.getElementById('oldPrice').value,
@@ -279,10 +305,15 @@
             deals.unshift(newDeal);
             localStorage.setItem('tanzilat_clothing_deals', JSON.stringify(deals));
             
-            document.getElementById('dealForm').reset();
+            document.getElementById('dealTitle').value = '';
+            document.getElementById('oldPrice').value = '';
+            document.getElementById('newPrice').value = '';
+            document.getElementById('dealDesc').value = '';
+            document.getElementById('dealImage').value = '';
+
             renderDeals();
             renderMerchantList();
-            alert('تم نشر العرض مع الصورة بنجاح وأصبح ظاهراً للزبائن!');
+            alert('تم نشر العرض في السوق بنجاح!');
         }
 
         function deleteDeal(index) {
@@ -299,4 +330,3 @@
     </script>
 </body>
 </html>
-
