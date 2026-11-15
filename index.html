@@ -7,21 +7,58 @@
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
-        body { font-family: 'Cairo', sans-serif; background-color: #121212; color: #e5e7eb; }
-        .category-pill.active { background-color: #d97706; color: #fff; border-color: #d97706; }
+        
+        :root {
+            --bg-main: #121212;
+            --bg-card: #18181b;
+            --bg-input: #09090b;
+            --border-color: #27272a;
+            --text-main: #f4f4f5;
+            --text-muted: #a1a1aa;
+        }
+
+        body.light-mode {
+            --bg-main: #f4f4f5;
+            --bg-card: #ffffff;
+            --bg-input: #f8fafc;
+            --border-color: #e4e4e7;
+            --text-main: #18181b;
+            --text-muted: #52525b;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .theme-card { background-color: var(--bg-card); border-color: var(--border-color); }
+        .theme-input { background-color: var(--bg-input); border-color: var(--border-color); color: var(--text-main); }
+        .theme-text-muted { color: var(--text-muted); }
+        .category-pill.active { background-color: #d97706 !important; color: #fff !important; border-color: #d97706 !important; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
 
     <!-- Header -->
-    <header class="bg-zinc-900 border-b border-zinc-800 sticky top-0 z-50 px-4 py-3 flex justify-between items-center shadow-md">
+    <header class="theme-card border-b sticky top-0 z-50 px-4 py-3 flex justify-between items-center shadow-sm">
         <div class="flex items-center gap-2 cursor-pointer" onclick="resetFilters()">
             <span class="text-2xl">👔</span>
-            <h1 class="text-xl font-bold text-amber-500 tracking-wide">تنزيلات طرطوس للألبسة</h1>
+            <h1 class="text-lg sm:text-xl font-bold text-amber-500 tracking-wide">تنزيلات طرطوس للألبسة</h1>
         </div>
-        <button type="button" onclick="openMerchantModal()" class="bg-amber-600 hover:bg-amber-500 text-zinc-950 font-bold px-4 py-2 rounded-xl text-sm transition flex items-center gap-1.5 shadow cursor-pointer">
-            <span>🔑</span> لوحة التاجر
-        </button>
+        <div class="flex items-center gap-2">
+            <!-- Theme Toggle Button -->
+            <button type="button" id="themeToggleBtn" onclick="toggleTheme()" title="تبديل الوضع الليلي والنهاري" 
+                class="theme-card border hover:border-amber-500 p-2 rounded-xl text-sm transition cursor-pointer shadow-xs">
+                ☀️
+            </button>
+            <!-- Merchant Portal Button -->
+            <button type="button" onclick="openMerchantModal()" 
+                class="bg-amber-600 hover:bg-amber-500 text-zinc-950 font-bold px-3.5 py-2 rounded-xl text-xs sm:text-sm transition flex items-center gap-1.5 shadow cursor-pointer">
+                <span>🔒</span> بوابة التجار
+            </button>
+        </div>
     </header>
 
     <!-- Main Content -->
@@ -31,18 +68,18 @@
         <div class="space-y-3">
             <div class="relative">
                 <input type="text" id="searchInput" oninput="filterDeals()" placeholder="ابحث عن قطعة، متجر، أو عرض ألبسة..." 
-                    class="w-full bg-zinc-900 border border-zinc-800 rounded-2xl py-3 px-4 pr-11 text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-amber-500 transition">
+                    class="theme-input w-full border rounded-2xl py-3 px-4 pr-11 placeholder-zinc-500 focus:outline-none focus:border-amber-500 transition">
                 <span class="absolute right-4 top-3.5 text-zinc-500">🔍</span>
             </div>
 
             <!-- Categories Pills -->
             <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-none" id="categoryPills">
-                <button type="button" onclick="filterByCategory('الكل')" class="category-pill active whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-semibold bg-zinc-900 border border-zinc-800 text-zinc-300 transition cursor-pointer">الكل</button>
-                <button type="button" onclick="filterByCategory('ألبسة رجالية')" class="category-pill whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-semibold bg-zinc-900 border border-zinc-800 text-zinc-300 transition cursor-pointer">👔 ألبسة رجالية</button>
-                <button type="button" onclick="filterByCategory('ألبسة نسائية')" class="category-pill whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-semibold bg-zinc-900 border border-zinc-800 text-zinc-300 transition cursor-pointer">👗 ألبسة نسائية</button>
-                <button type="button" onclick="filterByCategory('ألبسة أطفال')" class="category-pill whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-semibold bg-zinc-900 border border-zinc-800 text-zinc-300 transition cursor-pointer">🧒 ألبسة أطفال</button>
-                <button type="button" onclick="filterByCategory('أحذية وحقائب')" class="category-pill whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-semibold bg-zinc-900 border border-zinc-800 text-zinc-300 transition cursor-pointer">👞 أحذية وحقائب</button>
-                <button type="button" onclick="filterByCategory('ألبسة رياضية')" class="category-pill whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-semibold bg-zinc-900 border border-zinc-800 text-zinc-300 transition cursor-pointer">⚽ ألبسة رياضية</button>
+                <button type="button" onclick="filterByCategory('الكل')" class="category-pill theme-card theme-text-muted active whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-semibold border transition cursor-pointer">الكل</button>
+                <button type="button" onclick="filterByCategory('ألبسة رجالية')" class="category-pill theme-card theme-text-muted whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-semibold border transition cursor-pointer">👔 ألبسة رجالية</button>
+                <button type="button" onclick="filterByCategory('ألبسة نسائية')" class="category-pill theme-card theme-text-muted whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-semibold border transition cursor-pointer">👗 ألبسة نسائية</button>
+                <button type="button" onclick="filterByCategory('ألبسة أطفال')" class="category-pill theme-card theme-text-muted whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-semibold border transition cursor-pointer">🧒 ألبسة أطفال</button>
+                <button type="button" onclick="filterByCategory('أحذية وحقائب')" class="category-pill theme-card theme-text-muted whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-semibold border transition cursor-pointer">👞 أحذية وحقائب</button>
+                <button type="button" onclick="filterByCategory('ألبسة رياضية')" class="category-pill theme-card theme-text-muted whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-semibold border transition cursor-pointer">⚽ ألبسة رياضية</button>
             </div>
         </div>
 
@@ -52,40 +89,53 @@
         </div>
     </main>
 
-    <!-- Merchant PIN Modal -->
-    <div id="pinModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
-        <div class="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 max-w-sm w-full space-y-4 shadow-2xl">
-            <h3 class="text-lg font-bold text-amber-500 text-center">دخول لوحة تحكم التاجر</h3>
-            <p class="text-xs text-zinc-400 text-center">أدخل رمز المفتاح الخاص بمحلك (أو 2026 للإدارة)</p>
-            <input type="password" id="pinInput" placeholder="رمز المرور (PIN)" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl py-2.5 px-4 text-center text-xl tracking-widest text-zinc-100 focus:outline-none focus:border-amber-500">
-            <div class="flex gap-2 pt-2">
-                <button type="button" onclick="verifyPin()" class="flex-1 bg-amber-600 hover:bg-amber-500 text-zinc-950 font-bold py-2.5 rounded-xl transition cursor-pointer">دخول</button>
-                <button type="button" onclick="closePinModal()" class="flex-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold py-2.5 rounded-xl transition cursor-pointer">إلغاء</button>
+    <!-- Protected Merchant PIN Modal -->
+    <div id="pinModal" class="fixed inset-0 bg-black/75 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="theme-card border rounded-3xl p-6 max-w-sm w-full space-y-4 shadow-2xl">
+            <div class="text-center space-y-1">
+                <span class="text-3xl">🛡️</span>
+                <h3 class="text-lg font-bold text-amber-500">بوابة التجار المعتمدة</h3>
+                <p class="text-xs theme-text-muted">مخصصة لأصحاب المحلات المسجلين في المنصة فقط</p>
+            </div>
+            
+            <!-- Lockout Warning Message -->
+            <div id="lockoutWarning" class="hidden bg-red-500/10 border border-red-500/30 text-red-500 text-xs p-3 rounded-xl text-center font-semibold">
+                تم قفل الدخول مؤقتاً بسبب محاولات خاطئة متكررة. يرجى المحاولة بعد <span id="lockTimer">5:00</span>
+            </div>
+
+            <div id="pinFormArea" class="space-y-3">
+                <input type="password" id="pinInput" placeholder="أدخل مفتاح التاجر الخاص" 
+                    class="theme-input w-full border rounded-xl py-2.5 px-4 text-center text-base tracking-widest focus:outline-none focus:border-amber-500">
+                <p id="attemptsMsg" class="text-[11px] text-red-400 text-center hidden"></p>
+                <div class="flex gap-2 pt-1">
+                    <button type="button" onclick="verifyPin()" class="flex-1 bg-amber-600 hover:bg-amber-500 text-zinc-950 font-bold py-2.5 rounded-xl transition cursor-pointer">تحقق ودخول</button>
+                    <button type="button" onclick="closePinModal()" class="flex-1 bg-zinc-700 hover:bg-zinc-600 text-white font-bold py-2.5 rounded-xl transition cursor-pointer">إغلاق</button>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- Merchant Dashboard Modal -->
     <div id="dashboardModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50 p-4 overflow-y-auto">
-        <div class="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 max-w-lg w-full space-y-5 my-8 shadow-2xl">
-            <div class="flex justify-between items-center border-b border-zinc-800 pb-3">
+        <div class="theme-card border rounded-3xl p-6 max-w-lg w-full space-y-5 my-8 shadow-2xl">
+            <div class="flex justify-between items-center border-b border-zinc-700/40 pb-3">
                 <h3 id="dashboardTitle" class="text-lg font-bold text-amber-500">لوحة تحكم التاجر</h3>
-                <button type="button" onclick="closeDashboardModal()" class="text-zinc-400 hover:text-white text-xl cursor-pointer">✕</button>
+                <button type="button" onclick="closeDashboardModal()" class="theme-text-muted hover:text-amber-500 text-xl cursor-pointer">✕</button>
             </div>
 
             <!-- Admin Section to Add New Merchants -->
-            <div id="adminMerchantSection" class="hidden bg-zinc-950 p-4 rounded-2xl border border-amber-500/30 space-y-3">
-                <h4 class="text-xs font-bold text-amber-400">👑 لوحة الإدارة: إضافة تاجر ومحل جديد</h4>
+            <div id="adminMerchantSection" class="hidden theme-input p-4 rounded-2xl border border-amber-500/40 space-y-3">
+                <h4 class="text-xs font-bold text-amber-500">👑 إدارة المنصة: تسجيل محل جديد ومفتاح سري</h4>
                 <form onsubmit="addNewMerchant(event)" class="space-y-2">
-                    <input type="text" id="newStoreName" required placeholder="اسم المحل الجديد" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl py-1.5 px-3 text-xs text-zinc-100">
+                    <input type="text" id="newStoreName" required placeholder="اسم المحل الجديد" class="theme-card border rounded-xl py-1.5 px-3 text-xs w-full">
                     <div class="grid grid-cols-2 gap-2">
-                        <input type="text" id="newStorePin" required placeholder="الرمز السري (PIN)" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl py-1.5 px-3 text-xs text-zinc-100">
-                        <input type="text" id="newStoreWhatsapp" required placeholder="رقم واتساب (مثل: 9639...)" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl py-1.5 px-3 text-xs text-zinc-100">
+                        <input type="text" id="newStorePin" required placeholder="مفتاح سري قوي (حروف وأرقام)" class="theme-card border rounded-xl py-1.5 px-3 text-xs w-full">
+                        <input type="text" id="newStoreWhatsapp" required placeholder="واتساب (9639...)" class="theme-card border rounded-xl py-1.5 px-3 text-xs w-full">
                     </div>
-                    <button type="submit" class="w-full bg-amber-600 hover:bg-amber-500 text-zinc-950 font-bold py-1.5 rounded-xl text-xs transition cursor-pointer">إضافة التاجر للنظام</button>
+                    <button type="submit" class="w-full bg-amber-600 hover:bg-amber-500 text-zinc-950 font-bold py-1.5 rounded-xl text-xs transition cursor-pointer">اعتماد المحل في النظام</button>
                 </form>
-                <div class="pt-2 border-t border-zinc-800">
-                    <p class="text-[10px] text-zinc-400 mb-1">المحلات المسجلة حالياً:</p>
+                <div class="pt-2 border-t border-zinc-700/30">
+                    <p class="text-[10px] theme-text-muted mb-1">المتاجر المعتمدة حالياً:</p>
                     <div id="adminMerchantsList" class="space-y-1 max-h-24 overflow-y-auto"></div>
                 </div>
             </div>
@@ -93,16 +143,16 @@
             <!-- Add Deal Form -->
             <form id="dealForm" onsubmit="saveDeal(event)" class="space-y-4">
                 <div>
-                    <label class="block text-xs font-semibold text-zinc-400 mb-1">اسم المتجر / المحل</label>
-                    <input type="text" id="storeName" readonly class="w-full bg-zinc-950/60 border border-zinc-800 rounded-xl py-2 px-3 text-sm text-amber-400 font-bold cursor-not-allowed">
+                    <label class="block text-xs font-semibold theme-text-muted mb-1">اسم المتجر / المحل</label>
+                    <input type="text" id="storeName" readonly class="theme-input border rounded-xl py-2 px-3 text-sm text-amber-500 font-bold w-full cursor-not-allowed">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-zinc-400 mb-1">اسم القطعة أو العرض</label>
-                    <input type="text" id="dealTitle" required placeholder="مثال: خصم 30% على الجواكت الشتوية" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl py-2 px-3 text-sm text-zinc-100 focus:outline-none focus:border-amber-500">
+                    <label class="block text-xs font-semibold theme-text-muted mb-1">اسم القطعة أو العرض</label>
+                    <input type="text" id="dealTitle" required placeholder="مثال: خصم 30% على الجواكت الشتوية" class="theme-input border rounded-xl py-2 px-3 text-sm w-full focus:outline-none focus:border-amber-500">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-zinc-400 mb-1">قسم الألبسة</label>
-                    <select id="dealCategory" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl py-2 px-3 text-sm text-zinc-100 focus:outline-none focus:border-amber-500">
+                    <label class="block text-xs font-semibold theme-text-muted mb-1">قسم الألبسة</label>
+                    <select id="dealCategory" class="theme-input border rounded-xl py-2 px-3 text-sm w-full focus:outline-none focus:border-amber-500">
                         <option value="ألبسة رجالية">👔 ألبسة رجالية</option>
                         <option value="ألبسة نسائية">👗 ألبسة نسائية</option>
                         <option value="ألبسة أطفال">🧒 ألبسة أطفال</option>
@@ -111,51 +161,118 @@
                     </select>
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-zinc-400 mb-1">صورة القطعة (اختياري)</label>
-                    <input type="file" id="dealImage" accept="image/*" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl py-2 px-3 text-sm text-zinc-400 file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-amber-600 file:text-zinc-950 hover:file:bg-amber-500 cursor-pointer">
+                    <label class="block text-xs font-semibold theme-text-muted mb-1">صورة القطعة (اختياري)</label>
+                    <input type="file" id="dealImage" accept="image/*" class="theme-input border rounded-xl py-2 px-3 text-sm w-full file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-amber-600 file:text-zinc-950 hover:file:bg-amber-500 cursor-pointer">
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-xs font-semibold text-zinc-400 mb-1">السعر قبل الخصم (اختياري)</label>
-                        <input type="text" id="oldPrice" placeholder="مثال: 75,000 ل.س" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl py-2 px-3 text-sm text-zinc-100 focus:outline-none focus:border-amber-500">
+                        <label class="block text-xs font-semibold theme-text-muted mb-1">السعر قبل الخصم (اختياري)</label>
+                        <input type="text" id="oldPrice" placeholder="مثال: 75,000 ل.س" class="theme-input border rounded-xl py-2 px-3 text-sm w-full focus:outline-none focus:border-amber-500">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-zinc-400 mb-1">السعر الحالي / بعد الخصم</label>
-                        <input type="text" id="newPrice" required placeholder="مثال: 50,000 ل.س" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl py-2 px-3 text-sm text-zinc-100 focus:outline-none focus:border-amber-500">
+                        <label class="block text-xs font-semibold theme-text-muted mb-1">السعر الحالي / بعد الخصم</label>
+                        <input type="text" id="newPrice" required placeholder="مثال: 50,000 ل.س" class="theme-input border rounded-xl py-2 px-3 text-sm w-full focus:outline-none focus:border-amber-500">
                     </div>
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-zinc-400 mb-1">تفاصيل القياسات أو العنوان</label>
-                    <textarea id="dealDesc" rows="2" placeholder="متوفر مقاسات S/M/L، العنوان: شارع الثورة..." class="w-full bg-zinc-950 border border-zinc-800 rounded-xl py-2 px-3 text-sm text-zinc-100 focus:outline-none focus:border-amber-500"></textarea>
+                    <label class="block text-xs font-semibold theme-text-muted mb-1">تفاصيل القياسات أو العنوان</label>
+                    <textarea id="dealDesc" rows="2" placeholder="متوفر مقاسات S/M/L، العنوان: شارع الثورة..." class="theme-input border rounded-xl py-2 px-3 text-sm w-full focus:outline-none focus:border-amber-500"></textarea>
                 </div>
                 <button type="submit" class="w-full bg-amber-600 hover:bg-amber-500 text-zinc-950 font-bold py-2.5 rounded-xl transition shadow cursor-pointer">نشر العرض في السوق</button>
             </form>
 
             <!-- Current Deals Management -->
-            <div class="border-t border-zinc-800 pt-4 space-y-3">
-                <h4 class="text-sm font-bold text-zinc-300">عروض محلك الحالية</h4>
+            <div class="border-t border-zinc-700/40 pt-4 space-y-3">
+                <h4 class="text-sm font-bold">عروض محلك الحالية</h4>
                 <div id="merchantDealsList" class="space-y-2 max-h-48 overflow-y-auto"></div>
             </div>
         </div>
     </div>
 
     <!-- Footer -->
-    <footer class="py-6 text-center text-xs text-zinc-500 border-t border-zinc-800/60 mt-auto">
+    <footer class="py-6 text-center text-xs theme-text-muted border-t border-zinc-700/30 mt-auto">
         جميع الحقوق محفوظة © تنزيلات طرطوس للألبسة 2026
     </footer>
 
     <!-- JavaScript Logic -->
     <script>
+        // --- Theme Management (Day/Night Mode) ---
+        function initTheme() {
+            const savedTheme = localStorage.getItem('tanzilat_theme') || 'dark';
+            if (savedTheme === 'light') {
+                document.body.classList.add('light-mode');
+                document.getElementById('themeToggleBtn').textContent = '🌙';
+            } else {
+                document.body.classList.remove('light-mode');
+                document.getElementById('themeToggleBtn').textContent = '☀️';
+            }
+        }
+
+        function toggleTheme() {
+            const isLight = document.body.classList.toggle('light-mode');
+            localStorage.setItem('tanzilat_theme', isLight ? 'light' : 'dark');
+            document.getElementById('themeToggleBtn').textContent = isLight ? '🌙' : '☀️';
+        }
+
+        // --- Security & Merchants Database ---
+        const ADMIN_MASTER_PIN = "AGHA2026"; // مفتاح الإدارة القوي
         let defaultMerchants = [
-            { pin: "1111", store: "Agha", whatsapp: "963912345678" },
-            { pin: "2026", store: "الإدارة العامة (أغآ)", whatsapp: "963900000000" }
+            { pin: "AGHA#11", store: "Agha", whatsapp: "963912345678" },
+            { pin: ADMIN_MASTER_PIN, store: "الإدارة العامة (أغآ)", whatsapp: "963900000000" }
         ];
 
-        let merchantsDb = JSON.parse(localStorage.getItem('tanzilat_merchants')) || defaultMerchants;
+        let merchantsDb = JSON.parse(localStorage.getItem('tanzilat_merchants_v2')) || defaultMerchants;
         let deals = JSON.parse(localStorage.getItem('tanzilat_clothing_deals')) || [];
         let currentMerchant = null;
         let currentCategory = 'الكل';
 
+        // Brute-Force Protection Variables
+        let failedAttempts = parseInt(localStorage.getItem('trz_failed_attempts')) || 0;
+        let lockoutUntil = parseInt(localStorage.getItem('trz_lockout_until')) || 0;
+        let lockInterval = null;
+
+        function checkLockoutStatus() {
+            const now = Date.now();
+            const warningBox = document.getElementById('lockoutWarning');
+            const formArea = document.getElementById('pinFormArea');
+
+            if (lockoutUntil > now) {
+                warningBox.classList.remove('hidden');
+                formArea.classList.add('hidden');
+                updateLockTimer();
+                if (!lockInterval) {
+                    lockInterval = setInterval(updateLockTimer, 1000);
+                }
+                return true;
+            } else {
+                warningBox.classList.add('hidden');
+                formArea.classList.remove('hidden');
+                if (lockInterval) {
+                    clearInterval(lockInterval);
+                    lockInterval = null;
+                }
+                if (lockoutUntil !== 0) {
+                    lockoutUntil = 0;
+                    failedAttempts = 0;
+                    localStorage.removeItem('trz_lockout_until');
+                    localStorage.removeItem('trz_failed_attempts');
+                }
+                return false;
+            }
+        }
+
+        function updateLockTimer() {
+            const remaining = Math.max(0, lockoutUntil - Date.now());
+            if (remaining <= 0) {
+                checkLockoutStatus();
+                return;
+            }
+            const mins = Math.floor(remaining / 60000);
+            const secs = Math.floor((remaining % 60000) / 1000);
+            document.getElementById('lockTimer').textContent = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+        }
+
+        // --- Render Deals ---
         function renderDeals() {
             const container = document.getElementById('dealsContainer');
             const searchVal = document.getElementById('searchInput').value.toLowerCase();
@@ -172,35 +289,35 @@
                 container.innerHTML = `
                     <div class="col-span-full py-16 text-center space-y-3">
                         <span class="text-4xl">🛍️</span>
-                        <p class="text-zinc-400 text-sm">لا توجد عروض ألبسة مضافة في هذا القسم حالياً. كن أول تاجر يضيف عرضاً!</p>
+                        <p class="theme-text-muted text-sm">لا توجد عروض ألبسة مضافة في هذا القسم حالياً.</p>
                     </div>
                 `;
                 return;
             }
 
             container.innerHTML = filtered.map((deal) => `
-                <div class="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden shadow hover:border-amber-500/50 transition flex flex-col justify-between">
+                <div class="theme-card border rounded-2xl overflow-hidden shadow-sm hover:border-amber-500/60 transition flex flex-col justify-between">
                     <div>
                         ${deal.image ? `<div class="h-48 w-full overflow-hidden bg-zinc-950"><img src="${deal.image}" alt="${deal.title}" class="h-full w-full object-cover"></div>` : ''}
                         <div class="p-4 space-y-2">
                             <div class="flex justify-between items-start">
-                                <span class="bg-amber-500/10 text-amber-500 text-[10px] font-bold px-2.5 py-1 rounded-full border border-amber-500/20">${deal.category}</span>
-                                <span class="text-xs text-zinc-400 font-medium">🏪 ${deal.store}</span>
+                                <span class="bg-amber-500/15 text-amber-600 dark:text-amber-500 text-[10px] font-bold px-2.5 py-1 rounded-full border border-amber-500/20">${deal.category}</span>
+                                <span class="text-xs theme-text-muted font-medium">🏪 ${deal.store}</span>
                             </div>
-                            <h3 class="font-bold text-base text-zinc-100">${deal.title}</h3>
-                            ${deal.desc ? `<p class="text-xs text-zinc-400 leading-relaxed">${deal.desc}</p>` : ''}
+                            <h3 class="font-bold text-base">${deal.title}</h3>
+                            ${deal.desc ? `<p class="text-xs theme-text-muted leading-relaxed">${deal.desc}</p>` : ''}
                         </div>
                     </div>
                     <div class="p-4 pt-0 mt-2 space-y-3">
-                        <div class="pt-3 border-t border-zinc-800/80 flex justify-between items-center">
+                        <div class="pt-3 border-t border-zinc-700/20 flex justify-between items-center">
                             <div class="flex items-baseline gap-2">
                                 <span class="text-lg font-black text-amber-500">${deal.newPrice}</span>
-                                ${deal.oldPrice ? `<span class="text-xs text-zinc-500 line-through">${deal.oldPrice}</span>` : ''}
+                                ${deal.oldPrice ? `<span class="text-xs theme-text-muted line-through">${deal.oldPrice}</span>` : ''}
                             </div>
                         </div>
                         ${deal.whatsapp ? `
                             <a href="https://wa.me/${deal.whatsapp}?text=مرحباً، أود الاستفسار عن عرض (${deal.title}) من متجر ${deal.store}" target="_blank" 
-                               class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2 rounded-xl text-xs transition flex items-center justify-center gap-1.5 shadow">
+                               class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2 rounded-xl text-xs transition flex items-center justify-center gap-1.5 shadow-xs">
                                 <span>💬</span> تواصل مع التاجر عبر واتساب
                             </a>
                         ` : ''}
@@ -211,186 +328,4 @@
 
         function renderMerchantList() {
             const list = document.getElementById('merchantDealsList');
-            const merchantDeals = deals.filter(d => currentMerchant.pin === "2026" || d.store === currentMerchant.store);
-            
-            if (merchantDeals.length === 0) {
-                list.innerHTML = `<p class="text-xs text-zinc-500 text-center py-2">لا توجد عروض مضافة من محلك بعد.</p>`;
-                return;
-            }
-            list.innerHTML = merchantDeals.map((deal) => {
-                const globalIndex = deals.findIndex(d => d === deal);
-                return `
-                    <div class="flex justify-between items-center bg-zinc-950 p-2.5 rounded-xl border border-zinc-800 text-xs">
-                        <div class="flex items-center gap-2">
-                            ${deal.image ? `<img src="${deal.image}" class="w-8 h-8 rounded-lg object-cover">` : ''}
-                            <div>
-                                <span class="font-bold text-zinc-200">${deal.store}:</span> 
-                                <span class="text-zinc-400">${deal.title}</span>
-                            </div>
-                        </div>
-                        <button type="button" onclick="deleteDeal(${globalIndex})" class="text-red-400 hover:text-red-300 font-bold px-2 py-1 cursor-pointer">حذف</button>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function renderAdminMerchantsList() {
-            const adminList = document.getElementById('adminMerchantsList');
-            adminList.innerHTML = merchantsDb.map((m, idx) => `
-                <div class="flex justify-between items-center bg-zinc-900 px-2 py-1 rounded text-[10px]">
-                    <span>${m.store} (الرمز: ${m.pin})</span>
-                    ${m.pin !== "2026" ? `<button type="button" onclick="deleteMerchant(${idx})" class="text-red-400 font-bold cursor-pointer">حذف</button>` : ''}
-                </div>
-            `).join('');
-        }
-
-        function addNewMerchant(e) {
-            e.preventDefault();
-            const store = document.getElementById('newStoreName').value.trim();
-            const pin = document.getElementById('newStorePin').value.trim();
-            const whatsapp = document.getElementById('newStoreWhatsapp').value.trim();
-
-            if(merchantsDb.some(m => m.pin === pin)) {
-                alert('هذا الرمز السري مستخدم مسبقاً لمحل آخر!');
-                return;
-            }
-
-            merchantsDb.push({ store, pin, whatsapp });
-            localStorage.setItem('tanzilat_merchants', JSON.stringify(merchantsDb));
-            document.getElementById('newStoreName').value = '';
-            document.getElementById('newStorePin').value = '';
-            document.getElementById('newStoreWhatsapp').value = '';
-            renderAdminMerchantsList();
-            alert('تمت إضافة التاجر بنجاح!');
-        }
-
-        function deleteMerchant(idx) {
-            if(confirm('هل أنت متأكد من حذف هذا التاجر؟')) {
-                merchantsDb.splice(idx, 1);
-                localStorage.setItem('tanzilat_merchants', JSON.stringify(merchantsDb));
-                renderAdminMerchantsList();
-            }
-        }
-
-        function filterByCategory(cat) {
-            currentCategory = cat;
-            document.querySelectorAll('.category-pill').forEach(btn => {
-                if(btn.textContent.includes(cat) || (cat === 'الكل' && btn.textContent === 'الكل')) {
-                    btn.classList.add('active');
-                } else {
-                    btn.classList.remove('active');
-                }
-            });
-            renderDeals();
-        }
-
-        function filterDeals() {
-            renderDeals();
-        }
-
-        function resetFilters() {
-            document.getElementById('searchInput').value = '';
-            filterByCategory('الكل');
-        }
-
-        function openMerchantModal() {
-            const modal = document.getElementById('pinModal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            document.getElementById('pinInput').value = '';
-        }
-
-        function closePinModal() {
-            const modal = document.getElementById('pinModal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-        }
-
-        function verifyPin() {
-            const pin = document.getElementById('pinInput').value.trim();
-            const foundMerchant = merchantsDb.find(m => m.pin === pin);
-
-            if (foundMerchant) {
-                currentMerchant = foundMerchant;
-                closePinModal();
-                document.getElementById('storeName').value = foundMerchant.store;
-                document.getElementById('dashboardTitle').textContent = `لوحة تحكم: ${foundMerchant.store}`;
-                
-                const adminSec = document.getElementById('adminMerchantSection');
-                if(foundMerchant.pin === "2026") {
-                    adminSec.classList.remove('hidden');
-                    renderAdminMerchantsList();
-                } else {
-                    adminSec.classList.add('hidden');
-                }
-
-                const dashModal = document.getElementById('dashboardModal');
-                dashModal.classList.remove('hidden');
-                dashModal.classList.add('flex');
-                renderMerchantList();
-            } else {
-                alert('رمز المفتاح غير صحيح!');
-            }
-        }
-
-        function closeDashboardModal() {
-            const dashModal = document.getElementById('dashboardModal');
-            dashModal.classList.add('hidden');
-            dashModal.classList.remove('flex');
-        }
-
-        function saveDeal(e) {
-            e.preventDefault();
-            const imageInput = document.getElementById('dealImage');
-            
-            if (imageInput.files && imageInput.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(uploadEvent) {
-                    createAndStoreDeal(uploadEvent.target.result);
-                };
-                reader.readAsDataURL(imageInput.files[0]);
-            } else {
-                createAndStoreDeal(null);
-            }
-        }
-
-        function createAndStoreDeal(imageUrl) {
-            const newDeal = {
-                store: currentMerchant.store,
-                whatsapp: currentMerchant.whatsapp,
-                title: document.getElementById('dealTitle').value,
-                category: document.getElementById('dealCategory').value,
-                oldPrice: document.getElementById('oldPrice').value,
-                newPrice: document.getElementById('newPrice').value,
-                desc: document.getElementById('dealDesc').value,
-                image: imageUrl
-            };
-
-            deals.unshift(newDeal);
-            localStorage.setItem('tanzilat_clothing_deals', JSON.stringify(deals));
-            
-            document.getElementById('dealTitle').value = '';
-            document.getElementById('oldPrice').value = '';
-            document.getElementById('newPrice').value = '';
-            document.getElementById('dealDesc').value = '';
-            document.getElementById('dealImage').value = '';
-
-            renderDeals();
-            renderMerchantList();
-            alert('تم نشر العرض في السوق بنجاح!');
-        }
-
-        function deleteDeal(index) {
-            if (confirm('هل أنت متأكد من حذف هذا العرض؟')) {
-                deals.splice(index, 1);
-                localStorage.setItem('tanzilat_clothing_deals', JSON.stringify(deals));
-                renderDeals();
-                renderMerchantList();
-            }
-        }
-
-        // Initial Load
-        renderDeals();
-    </script>
-</body>
-</html>
+            const merchantDeals = deals.filter(d => currentMerchant.pin === ADMIN_MASTER_PIN || d.store === currentMer
