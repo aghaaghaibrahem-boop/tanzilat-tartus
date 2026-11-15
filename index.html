@@ -345,4 +345,116 @@
 
         function renderAdminList() {
             document.getElementById('adminList').innerHTML = merchants.map((m, i) => `
-                <div style="display:flex; justify-content:space-between; align-items:center; background:var(--bg-card); border:1
+                <div style="display:flex; justify-content:space-between; align-items:center; background:var(--bg-card); border:1px solid var(--border-color); padding:5px 8px; margin-bottom:4px; border-radius:6px;">
+                    <span><b>${m.store}</b> (المفتاح: <span style="color:#d97706;">${m.pin}</span>)</span>
+                    ${m.pin !== ADMIN_KEY ? `<button type="button" class="danger-btn" onclick="delMerchant(${i})">حذف</button>` : ''}
+                </div>
+            `).join('');
+        }
+
+        function addMerchant(e) {
+            e.preventDefault();
+            const store = document.getElementById('mName').value.trim();
+            const pin = document.getElementById('mPin').value.trim();
+            const whatsapp = document.getElementById('mWa').value.trim();
+            
+            if (pin.length < 5) {
+                alert('يجب أن يكون المفتاح السري 5 خانات على الأقل لضمان الأمان!');
+                return;
+            }
+            if (merchants.some(m => m.pin === pin)) {
+                alert('هذا المفتاح مستخدم مسبقاً!');
+                return;
+            }
+            merchants.push({ store, pin, whatsapp });
+            localStorage.setItem('trz_merchants_v2', JSON.stringify(merchants));
+            document.getElementById('mName').value = '';
+            document.getElementById('mPin').value = '';
+            document.getElementById('mWa').value = '';
+            renderAdminList();
+            alert('تم اعتماد المحل ومفتاحه السري بنجاح!');
+        }
+
+        function delMerchant(i) {
+            if (confirm('هل أنت متأكد من إلغاء اعتماد هذا المحل؟')) {
+                merchants.splice(i, 1);
+                localStorage.setItem('trz_merchants_v2', JSON.stringify(merchants));
+                renderAdminList();
+            }
+        }
+
+        function saveDeal(e) {
+            e.preventDefault();
+            const fileInput = document.getElementById('dealImg');
+            
+            if (fileInput.files && fileInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(ev) {
+                    pushDeal(ev.target.result);
+                };
+                reader.readAsDataURL(fileInput.files[0]);
+            } else {
+                pushDeal(null);
+            }
+        }
+
+        function pushDeal(imgUrl) {
+            const newDeal = {
+                store: activeMerchant.store,
+                whatsapp: activeMerchant.whatsapp,
+                title: document.getElementById('dealTitle').value,
+                cat: document.getElementById('dealCat').value,
+                oldP: document.getElementById('oldP').value,
+                newP: document.getElementById('newP').value,
+                desc: document.getElementById('dealDesc').value,
+                img: imgUrl
+            };
+
+            deals.unshift(newDeal);
+            localStorage.setItem('trz_deals', JSON.stringify(deals));
+            
+            document.getElementById('dealTitle').value = '';
+            document.getElementById('oldP').value = '';
+            document.getElementById('newP').value = '';
+            document.getElementById('dealDesc').value = '';
+            document.getElementById('dealImg').value = '';
+
+            renderDeals();
+            renderMerchantDeals();
+            alert('تم نشر العرض بنجاح!');
+        }
+
+        function renderMerchantDeals() {
+            const list = document.getElementById('merchantDeals');
+            const myDeals = deals.filter(d => activeMerchant.pin === ADMIN_KEY || d.store === activeMerchant.store);
+            
+            if (myDeals.length === 0) {
+                list.innerHTML = `<span style="font-size:0.75rem; color:var(--text-muted); text-align:center;">لا توجد عروض مضافة بعد.</span>`;
+                return;
+            }
+
+            list.innerHTML = myDeals.map((d) => {
+                const idx = deals.indexOf(d);
+                return `
+                    <div style="display:flex; justify-content:space-between; align-items:center; background:var(--bg-input); border:1px solid var(--border-color); padding:6px 10px; border-radius:6px; font-size:0.75rem;">
+                        <span><b>${d.store}:</b> ${d.title}</span>
+                        <button type="button" class="danger-btn" onclick="delDeal(${idx})">حذف</button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function delDeal(idx) {
+            if (confirm('هل تريد حذف هذا العرض؟')) {
+                deals.splice(idx, 1);
+                localStorage.setItem('trz_deals', JSON.stringify(deals));
+                renderDeals();
+                renderMerchantDeals();
+            }
+        }
+
+        initTheme();
+        renderDeals();
+    </script>
+</body>
+</html>
