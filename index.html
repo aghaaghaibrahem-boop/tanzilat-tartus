@@ -4,328 +4,345 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تنزيلات طرطوس - ألبسة ومشتقاتها</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
         
         :root {
             --bg-main: #121212;
-            --bg-card: #18181b;
+            --bg-card: #1a1a1a;
             --bg-input: #09090b;
             --border-color: #27272a;
             --text-main: #f4f4f5;
-            --text-muted: #a1a1aa;
+            --text-muted: #9ca3af;
         }
 
         body.light-mode {
             --bg-main: #f4f4f5;
             --bg-card: #ffffff;
             --bg-input: #f8fafc;
-            --border-color: #e4e4e7;
+            --border-color: #d4d4d8;
             --text-main: #18181b;
             --text-muted: #52525b;
         }
 
-        body {
-            font-family: 'Cairo', sans-serif;
-            background-color: var(--bg-main);
-            color: var(--text-main);
-            transition: background-color 0.3s, color 0.3s;
-        }
-
-        .theme-card { background-color: var(--bg-card); border-color: var(--border-color); }
-        .theme-input { background-color: var(--bg-input); border-color: var(--border-color); color: var(--text-main); }
-        .theme-text-muted { color: var(--text-muted); }
-        .category-pill.active { background-color: #d97706 !important; color: #fff !important; border-color: #d97706 !important; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', sans-serif; }
+        body { background-color: var(--bg-main); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; transition: background-color 0.25s, color 0.25s; }
+        
+        header { background-color: var(--bg-card); border-bottom: 1px solid var(--border-color); padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 50; }
+        .logo { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 1.15rem; font-weight: bold; color: #d97706; }
+        .header-actions { display: flex; align-items: center; gap: 8px; }
+        .theme-btn { background-color: var(--bg-input); border: 1px solid var(--border-color); color: var(--text-main); padding: 7px 10px; border-radius: 10px; font-size: 0.95rem; cursor: pointer; }
+        .merchant-btn { background-color: #d97706; color: #09090b; border: none; padding: 8px 14px; border-radius: 10px; font-weight: bold; font-size: 0.85rem; cursor: pointer; }
+        
+        main { flex: 1; max-width: 900px; width: 100%; margin: 0 auto; padding: 16px; }
+        .search-box { width: 100%; background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 12px 16px; color: var(--text-main); font-size: 0.95rem; outline: none; margin-bottom: 12px; }
+        .categories { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 16px; scrollbar-width: none; }
+        .pill { background-color: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-muted); padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; white-space: nowrap; cursor: pointer; }
+        .pill.active { background-color: #d97706; color: #fff; border-color: #d97706; }
+        
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+        .card { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 14px; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; }
+        .card img { width: 100%; height: 180px; object-fit: cover; background: #000; }
+        .card-body { padding: 14px; }
+        .badge { display: inline-block; background: rgba(217,119,6,0.15); color: #d97706; font-size: 0.7rem; font-weight: bold; padding: 3px 8px; border-radius: 6px; margin-bottom: 6px; }
+        .card-title { font-size: 1rem; font-weight: bold; color: var(--text-main); margin-bottom: 4px; }
+        .card-desc { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px; }
+        .card-footer { padding: 12px 14px; border-top: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 8px; }
+        .price { font-size: 1.1rem; font-weight: 900; color: #d97706; }
+        .whatsapp-btn { background-color: #059669; color: #fff; text-align: center; padding: 8px; border-radius: 8px; font-size: 0.8rem; font-weight: bold; text-decoration: none; display: block; }
+        
+        /* Modals */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 100; align-items: center; justify-content: center; padding: 16px; }
+        .modal.show { display: flex; }
+        .modal-content { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; width: 100%; max-width: 450px; padding: 20px; max-height: 90vh; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; }
+        .modal-header h3 { color: #d97706; font-size: 1.1rem; }
+        .close-btn { background: none; border: none; color: var(--text-muted); font-size: 1.2rem; cursor: pointer; }
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px; }
+        .form-control { width: 100%; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 8px; padding: 8px 12px; color: var(--text-main); font-size: 0.85rem; outline: none; }
+        .submit-btn { width: 100%; background: #d97706; color: #09090b; border: none; padding: 10px; border-radius: 8px; font-weight: bold; font-size: 0.9rem; cursor: pointer; margin-top: 8px; }
+        .danger-btn { background: #ef4444; color: #fff; border: none; padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; cursor: pointer; }
+        .lock-box { background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.4); color: #ef4444; padding: 12px; border-radius: 10px; font-size: 0.8rem; font-weight: bold; margin-bottom: 10px; display: none; }
+        footer { text-align: center; padding: 16px; font-size: 0.75rem; color: var(--text-muted); border-top: 1px solid var(--border-color); margin-top: auto; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col">
+<body>
 
-    <!-- Header -->
-    <header class="theme-card border-b sticky top-0 z-50 px-4 py-3 flex justify-between items-center shadow-sm">
-        <div class="flex items-center gap-2 cursor-pointer" onclick="resetFilters()">
-            <span class="text-2xl">👔</span>
-            <h1 class="text-lg sm:text-xl font-bold text-amber-500 tracking-wide">تنزيلات طرطوس للألبسة</h1>
+    <header>
+        <div class="logo" onclick="resetFilters()">
+            <span>👔</span>
+            <h1>تنزيلات طرطوس</h1>
         </div>
-        <div class="flex items-center gap-2">
-            <!-- Theme Toggle Button -->
-            <button type="button" id="themeToggleBtn" onclick="toggleTheme()" title="تبديل الوضع الليلي والنهاري" 
-                class="theme-card border hover:border-amber-500 p-2 rounded-xl text-sm transition cursor-pointer shadow-xs">
-                ☀️
-            </button>
-            <!-- Merchant Portal Button -->
-            <button type="button" onclick="openMerchantModal()" 
-                class="bg-amber-600 hover:bg-amber-500 text-zinc-950 font-bold px-3.5 py-2 rounded-xl text-xs sm:text-sm transition flex items-center gap-1.5 shadow cursor-pointer">
-                <span>🔒</span> بوابة التجار
-            </button>
+        <div class="header-actions">
+            <button type="button" class="theme-btn" id="themeBtn" onclick="toggleTheme()">☀️</button>
+            <button type="button" class="merchant-btn" onclick="openPinModal()">🔒 بوابة التجار</button>
         </div>
     </header>
 
-    <!-- Main Content -->
-    <main class="flex-1 max-w-5xl w-full mx-auto p-4 space-y-6">
+    <main>
+        <input type="text" id="searchInput" class="search-box" oninput="renderDeals()" placeholder="ابحث عن قطعة، متجر، أو عرض ألبسة...">
         
-        <!-- Search and Filter Bar -->
-        <div class="space-y-3">
-            <div class="relative">
-                <input type="text" id="searchInput" oninput="filterDeals()" placeholder="ابحث عن قطعة، متجر، أو عرض ألبسة..." 
-                    class="theme-input w-full border rounded-2xl py-3 px-4 pr-11 placeholder-zinc-500 focus:outline-none focus:border-amber-500 transition">
-                <span class="absolute right-4 top-3.5 text-zinc-500">🔍</span>
-            </div>
-
-            <!-- Categories Pills -->
-            <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-none" id="categoryPills">
-                <button type="button" onclick="filterByCategory('الكل')" class="category-pill theme-card theme-text-muted active whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-semibold border transition cursor-pointer">الكل</button>
-                <button type="button" onclick="filterByCategory('ألبسة رجالية')" class="category-pill theme-card theme-text-muted whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-semibold border transition cursor-pointer">👔 ألبسة رجالية</button>
-                <button type="button" onclick="filterByCategory('ألبسة نسائية')" class="category-pill theme-card theme-text-muted whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-semibold border transition cursor-pointer">👗 ألبسة نسائية</button>
-                <button type="button" onclick="filterByCategory('ألبسة أطفال')" class="category-pill theme-card theme-text-muted whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-semibold border transition cursor-pointer">🧒 ألبسة أطفال</button>
-                <button type="button" onclick="filterByCategory('أحذية وحقائب')" class="category-pill theme-card theme-text-muted whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-semibold border transition cursor-pointer">👞 أحذية وحقائب</button>
-                <button type="button" onclick="filterByCategory('ألبسة رياضية')" class="category-pill theme-card theme-text-muted whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-semibold border transition cursor-pointer">⚽ ألبسة رياضية</button>
-            </div>
+        <div class="categories" id="categoryPills">
+            <button type="button" class="pill active" onclick="filterCat('الكل', this)">الكل</button>
+            <button type="button" class="pill" onclick="filterCat('ألبسة رجالية', this)">👔 ألبسة رجالية</button>
+            <button type="button" class="pill" onclick="filterCat('ألبسة نسائية', this)">👗 ألبسة نسائية</button>
+            <button type="button" class="pill" onclick="filterCat('ألبسة أطفال', this)">🧒 ألبسة أطفال</button>
+            <button type="button" class="pill" onclick="filterCat('أحذية وحقائب', this)">👞 أحذية وحقائب</button>
+            <button type="button" class="pill" onclick="filterCat('ألبسة رياضية', this)">⚽ ألبسة رياضية</button>
         </div>
 
-        <!-- Deals Grid -->
-        <div id="dealsContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-            <!-- Dynamic Content -->
-        </div>
+        <div class="grid" id="dealsContainer"></div>
     </main>
 
-    <!-- Protected Merchant PIN Modal -->
-    <div id="pinModal" class="fixed inset-0 bg-black/75 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
-        <div class="theme-card border rounded-3xl p-6 max-w-sm w-full space-y-4 shadow-2xl">
-            <div class="text-center space-y-1">
-                <span class="text-3xl">🛡️</span>
-                <h3 class="text-lg font-bold text-amber-500">بوابة التجار المعتمدة</h3>
-                <p class="text-xs theme-text-muted">مخصصة لأصحاب المحلات المسجلين في المنصة فقط</p>
-            </div>
+    <!-- PIN Modal -->
+    <div class="modal" id="pinModal">
+        <div class="modal-content" style="max-width: 330px; text-align: center;">
+            <div style="font-size: 1.8rem; margin-bottom: 4px;">🛡️</div>
+            <h3 style="margin-bottom: 4px; color: #d97706;">بوابة التجار المعتمدة</h3>
+            <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 12px;">مخصصة لأصحاب المحلات المسجلين فقط</p>
             
-            <!-- Lockout Warning Message -->
-            <div id="lockoutWarning" class="hidden bg-red-500/10 border border-red-500/30 text-red-500 text-xs p-3 rounded-xl text-center font-semibold">
-                تم قفل الدخول مؤقتاً بسبب محاولات خاطئة متكررة. يرجى المحاولة بعد <span id="lockTimer">5:00</span>
+            <div id="lockBox" class="lock-box">
+                تم قفل الدخول مؤقتاً بسبب محاولات خاطئة. حاول بعد <span id="lockTimer">5:00</span>
             </div>
 
-            <div id="pinFormArea" class="space-y-3">
-                <input type="password" id="pinInput" placeholder="أدخل مفتاح التاجر الخاص" 
-                    class="theme-input w-full border rounded-xl py-2.5 px-4 text-center text-base tracking-widest focus:outline-none focus:border-amber-500">
-                <p id="attemptsMsg" class="text-[11px] text-red-400 text-center hidden"></p>
-                <div class="flex gap-2 pt-1">
-                    <button type="button" onclick="verifyPin()" class="flex-1 bg-amber-600 hover:bg-amber-500 text-zinc-950 font-bold py-2.5 rounded-xl transition cursor-pointer">تحقق ودخول</button>
-                    <button type="button" onclick="closePinModal()" class="flex-1 bg-zinc-700 hover:bg-zinc-600 text-white font-bold py-2.5 rounded-xl transition cursor-pointer">إغلاق</button>
+            <div id="pinArea">
+                <input type="password" id="pinInput" class="form-control" placeholder="أدخل مفتاح التاجر الخاص" style="text-align: center; font-size: 1rem; letter-spacing: 3px; margin-bottom: 8px;">
+                <p id="errMsg" style="font-size: 0.72rem; color: #ef4444; margin-bottom: 8px; display: none;"></p>
+                <div style="display: flex; gap: 8px;">
+                    <button type="button" class="submit-btn" style="margin-top:0;" onclick="verifyPin()">تحقق ودخول</button>
+                    <button type="button" class="submit-btn" style="margin-top:0; background:#3f3f46; color:#fff;" onclick="closeModals()">إلغاء</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Merchant Dashboard Modal -->
-    <div id="dashboardModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50 p-4 overflow-y-auto">
-        <div class="theme-card border rounded-3xl p-6 max-w-lg w-full space-y-5 my-8 shadow-2xl">
-            <div class="flex justify-between items-center border-b border-zinc-700/40 pb-3">
-                <h3 id="dashboardTitle" class="text-lg font-bold text-amber-500">لوحة تحكم التاجر</h3>
-                <button type="button" onclick="closeDashboardModal()" class="theme-text-muted hover:text-amber-500 text-xl cursor-pointer">✕</button>
+    <!-- Dashboard Modal -->
+    <div class="modal" id="dashboardModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="dashTitle">لوحة التحكم</h3>
+                <button type="button" class="close-btn" onclick="closeModals()">✕</button>
             </div>
 
-            <!-- Admin Section to Add New Merchants -->
-            <div id="adminMerchantSection" class="hidden theme-input p-4 rounded-2xl border border-amber-500/40 space-y-3">
-                <h4 class="text-xs font-bold text-amber-500">👑 إدارة المنصة: تسجيل محل جديد ومفتاح سري</h4>
-                <form onsubmit="addNewMerchant(event)" class="space-y-2">
-                    <input type="text" id="newStoreName" required placeholder="اسم المحل الجديد" class="theme-card border rounded-xl py-1.5 px-3 text-xs w-full">
-                    <div class="grid grid-cols-2 gap-2">
-                        <input type="text" id="newStorePin" required placeholder="مفتاح سري قوي (حروف وأرقام)" class="theme-card border rounded-xl py-1.5 px-3 text-xs w-full">
-                        <input type="text" id="newStoreWhatsapp" required placeholder="واتساب (9639...)" class="theme-card border rounded-xl py-1.5 px-3 text-xs w-full">
+            <!-- Admin Add Merchant Section -->
+            <div id="adminSection" style="display:none; background:var(--bg-input); padding:12px; border-radius:10px; border:1px solid rgba(217,119,6,0.4); margin-bottom:14px;">
+                <h4 style="font-size:0.8rem; color:#d97706; margin-bottom:8px;">👑 إدارة المنصة: اعتماد محل ومفتاح جديد</h4>
+                <form onsubmit="addMerchant(event)">
+                    <div class="form-group"><input type="text" id="mName" class="form-control" placeholder="اسم المحل الجديد" required></div>
+                    <div style="display:flex; gap:6px;">
+                        <input type="text" id="mPin" class="form-control" placeholder="مفتاح قوي (5 خانات+)" required>
+                        <input type="text" id="mWa" class="form-control" placeholder="واتساب 9639..." required>
                     </div>
-                    <button type="submit" class="w-full bg-amber-600 hover:bg-amber-500 text-zinc-950 font-bold py-1.5 rounded-xl text-xs transition cursor-pointer">اعتماد المحل في النظام</button>
+                    <button type="submit" class="submit-btn" style="padding:7px; font-size:0.8rem;">اعتماد التاجر</button>
                 </form>
-                <div class="pt-2 border-t border-zinc-700/30">
-                    <p class="text-[10px] theme-text-muted mb-1">المتاجر المعتمدة حالياً:</p>
-                    <div id="adminMerchantsList" class="space-y-1 max-h-24 overflow-y-auto"></div>
-                </div>
+                <div id="adminList" style="margin-top:10px; font-size:0.75rem; max-height:90px; overflow-y:auto;"></div>
             </div>
 
             <!-- Add Deal Form -->
-            <form id="dealForm" onsubmit="saveDeal(event)" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-semibold theme-text-muted mb-1">اسم المتجر / المحل</label>
-                    <input type="text" id="storeName" readonly class="theme-input border rounded-xl py-2 px-3 text-sm text-amber-500 font-bold w-full cursor-not-allowed">
+            <form onsubmit="saveDeal(event)">
+                <div class="form-group">
+                    <label>المحل</label>
+                    <input type="text" id="storeField" class="form-control" readonly style="color:#d97706; font-weight:bold;">
                 </div>
-                <div>
-                    <label class="block text-xs font-semibold theme-text-muted mb-1">اسم القطعة أو العرض</label>
-                    <input type="text" id="dealTitle" required placeholder="مثال: خصم 30% على الجواكت الشتوية" class="theme-input border rounded-xl py-2 px-3 text-sm w-full focus:outline-none focus:border-amber-500">
+                <div class="form-group">
+                    <label>اسم القطعة أو العرض</label>
+                    <input type="text" id="dealTitle" class="form-control" placeholder="مثال: جاكيت شتوي فاخر" required>
                 </div>
-                <div>
-                    <label class="block text-xs font-semibold theme-text-muted mb-1">قسم الألبسة</label>
-                    <select id="dealCategory" class="theme-input border rounded-xl py-2 px-3 text-sm w-full focus:outline-none focus:border-amber-500">
-                        <option value="ألبسة رجالية">👔 ألبسة رجالية</option>
-                        <option value="ألبسة نسائية">👗 ألبسة نسائية</option>
-                        <option value="ألبسة أطفال">🧒 ألبسة أطفال</option>
-                        <option value="أحذية وحقائب">👞 أحذية وحقائب</option>
-                        <option value="ألبسة رياضية">⚽ ألبسة رياضية</option>
+                <div class="form-group">
+                    <label>القسم</label>
+                    <select id="dealCat" class="form-control">
+                        <option value="ألبسة رجالية">ألبسة رجالية</option>
+                        <option value="ألبسة نسائية">ألبسة نسائية</option>
+                        <option value="ألبسة أطفال">ألبسة أطفال</option>
+                        <option value="أحذية وحقائب">أحذية وحقائب</option>
+                        <option value="ألبسة رياضية">ألبسة رياضية</option>
                     </select>
                 </div>
-                <div>
-                    <label class="block text-xs font-semibold theme-text-muted mb-1">صورة القطعة (اختياري)</label>
-                    <input type="file" id="dealImage" accept="image/*" class="theme-input border rounded-xl py-2 px-3 text-sm w-full file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-amber-600 file:text-zinc-950 hover:file:bg-amber-500 cursor-pointer">
+                <div class="form-group">
+                    <label>صورة القطعة</label>
+                    <input type="file" id="dealImg" accept="image/*" class="form-control" style="padding:4px;">
                 </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-xs font-semibold theme-text-muted mb-1">السعر قبل الخصم (اختياري)</label>
-                        <input type="text" id="oldPrice" placeholder="مثال: 75,000 ل.س" class="theme-input border rounded-xl py-2 px-3 text-sm w-full focus:outline-none focus:border-amber-500">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold theme-text-muted mb-1">السعر الحالي / بعد الخصم</label>
-                        <input type="text" id="newPrice" required placeholder="مثال: 50,000 ل.س" class="theme-input border rounded-xl py-2 px-3 text-sm w-full focus:outline-none focus:border-amber-500">
-                    </div>
+                <div style="display:flex; gap:8px;">
+                    <div class="form-group" style="flex:1;"><label>السعر القديم</label><input type="text" id="oldP" class="form-control" placeholder="اختياري"></div>
+                    <div class="form-group" style="flex:1;"><label>السعر الحالي</label><input type="text" id="newP" class="form-control" placeholder="مطلوب" required></div>
                 </div>
-                <div>
-                    <label class="block text-xs font-semibold theme-text-muted mb-1">تفاصيل القياسات أو العنوان</label>
-                    <textarea id="dealDesc" rows="2" placeholder="متوفر مقاسات S/M/L، العنوان: شارع الثورة..." class="theme-input border rounded-xl py-2 px-3 text-sm w-full focus:outline-none focus:border-amber-500"></textarea>
+                <div class="form-group">
+                    <label>التفاصيل (العنوان / المقاسات)</label>
+                    <textarea id="dealDesc" class="form-control" rows="2" placeholder="متوفر مقاسات M/L..."></textarea>
                 </div>
-                <button type="submit" class="w-full bg-amber-600 hover:bg-amber-500 text-zinc-950 font-bold py-2.5 rounded-xl transition shadow cursor-pointer">نشر العرض في السوق</button>
+                <button type="submit" class="submit-btn">نشر العرض في السوق</button>
             </form>
 
-            <!-- Current Deals Management -->
-            <div class="border-t border-zinc-700/40 pt-4 space-y-3">
-                <h4 class="text-sm font-bold">عروض محلك الحالية</h4>
-                <div id="merchantDealsList" class="space-y-2 max-h-48 overflow-y-auto"></div>
+            <div style="margin-top: 16px; border-top: 1px solid var(--border-color); padding-top: 10px;">
+                <h4 style="font-size:0.8rem; margin-bottom:6px;">عروض محلك الحالية</h4>
+                <div id="merchantDeals" style="max-height:120px; overflow-y:auto; display:flex; flex-direction:column; gap:6px;"></div>
             </div>
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer class="py-6 text-center text-xs theme-text-muted border-t border-zinc-700/30 mt-auto">
-        جميع الحقوق محفوظة © تنزيلات طرطوس للألبسة 2026
-    </footer>
+    <footer>جميع الحقوق محفوظة © تنزيلات طرطوس للألبسة 2026</footer>
 
-    <!-- JavaScript Logic -->
     <script>
-        // --- Theme Management (Day/Night Mode) ---
+        const ADMIN_KEY = "AGHA2026";
+        let merchants = JSON.parse(localStorage.getItem('trz_merchants_v2')) || [
+            { store: "Agha", pin: "AGHA#11", whatsapp: "963912345678" },
+            { store: "الإدارة العامة (أغآ)", pin: ADMIN_KEY, whatsapp: "963900000000" }
+        ];
+        let deals = JSON.parse(localStorage.getItem('trz_deals')) || [];
+        let currentCat = 'الكل';
+        let activeMerchant = null;
+
+        let attempts = parseInt(localStorage.getItem('trz_attempts')) || 0;
+        let lockUntil = parseInt(localStorage.getItem('trz_lock')) || 0;
+        let timerInterval = null;
+
+        // Day / Night Theme
         function initTheme() {
-            const savedTheme = localStorage.getItem('tanzilat_theme') || 'dark';
-            if (savedTheme === 'light') {
+            const saved = localStorage.getItem('trz_theme') || 'dark';
+            if (saved === 'light') {
                 document.body.classList.add('light-mode');
-                document.getElementById('themeToggleBtn').textContent = '🌙';
-            } else {
-                document.body.classList.remove('light-mode');
-                document.getElementById('themeToggleBtn').textContent = '☀️';
+                document.getElementById('themeBtn').textContent = '🌙';
             }
         }
 
         function toggleTheme() {
             const isLight = document.body.classList.toggle('light-mode');
-            localStorage.setItem('tanzilat_theme', isLight ? 'light' : 'dark');
-            document.getElementById('themeToggleBtn').textContent = isLight ? '🌙' : '☀️';
+            localStorage.setItem('trz_theme', isLight ? 'light' : 'dark');
+            document.getElementById('themeBtn').textContent = isLight ? '🌙' : '☀️';
         }
 
-        // --- Security & Merchants Database ---
-        const ADMIN_MASTER_PIN = "AGHA2026"; // مفتاح الإدارة القوي
-        let defaultMerchants = [
-            { pin: "AGHA#11", store: "Agha", whatsapp: "963912345678" },
-            { pin: ADMIN_MASTER_PIN, store: "الإدارة العامة (أغآ)", whatsapp: "963900000000" }
-        ];
-
-        let merchantsDb = JSON.parse(localStorage.getItem('tanzilat_merchants_v2')) || defaultMerchants;
-        let deals = JSON.parse(localStorage.getItem('tanzilat_clothing_deals')) || [];
-        let currentMerchant = null;
-        let currentCategory = 'الكل';
-
-        // Brute-Force Protection Variables
-        let failedAttempts = parseInt(localStorage.getItem('trz_failed_attempts')) || 0;
-        let lockoutUntil = parseInt(localStorage.getItem('trz_lockout_until')) || 0;
-        let lockInterval = null;
-
-        function checkLockoutStatus() {
+        // Security Lockout
+        function checkLock() {
             const now = Date.now();
-            const warningBox = document.getElementById('lockoutWarning');
-            const formArea = document.getElementById('pinFormArea');
+            const lockBox = document.getElementById('lockBox');
+            const pinArea = document.getElementById('pinArea');
 
-            if (lockoutUntil > now) {
-                warningBox.classList.remove('hidden');
-                formArea.classList.add('hidden');
-                updateLockTimer();
-                if (!lockInterval) {
-                    lockInterval = setInterval(updateLockTimer, 1000);
-                }
+            if (lockUntil > now) {
+                lockBox.style.display = 'block';
+                pinArea.style.display = 'none';
+                updateTimer();
+                if (!timerInterval) timerInterval = setInterval(updateTimer, 1000);
                 return true;
             } else {
-                warningBox.classList.add('hidden');
-                formArea.classList.remove('hidden');
-                if (lockInterval) {
-                    clearInterval(lockInterval);
-                    lockInterval = null;
-                }
-                if (lockoutUntil !== 0) {
-                    lockoutUntil = 0;
-                    failedAttempts = 0;
-                    localStorage.removeItem('trz_lockout_until');
-                    localStorage.removeItem('trz_failed_attempts');
+                lockBox.style.display = 'none';
+                pinArea.style.display = 'block';
+                if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+                if (lockUntil !== 0) {
+                    lockUntil = 0; attempts = 0;
+                    localStorage.removeItem('trz_lock');
+                    localStorage.removeItem('trz_attempts');
                 }
                 return false;
             }
         }
 
-        function updateLockTimer() {
-            const remaining = Math.max(0, lockoutUntil - Date.now());
-            if (remaining <= 0) {
-                checkLockoutStatus();
-                return;
-            }
-            const mins = Math.floor(remaining / 60000);
-            const secs = Math.floor((remaining % 60000) / 1000);
-            document.getElementById('lockTimer').textContent = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+        function updateTimer() {
+            const diff = Math.max(0, lockUntil - Date.now());
+            if (diff <= 0) { checkLock(); return; }
+            const m = Math.floor(diff / 60000);
+            const s = Math.floor((diff % 60000) / 1000);
+            document.getElementById('lockTimer').textContent = `${m}:${s < 10 ? '0' : ''}${s}`;
         }
 
-        // --- Render Deals ---
         function renderDeals() {
             const container = document.getElementById('dealsContainer');
-            const searchVal = document.getElementById('searchInput').value.toLowerCase();
-
-            const filtered = deals.filter(deal => {
-                const matchesCategory = currentCategory === 'الكل' || deal.category === currentCategory;
-                const matchesSearch = deal.store.toLowerCase().includes(searchVal) || 
-                                      deal.title.toLowerCase().includes(searchVal) || 
-                                      (deal.desc && deal.desc.toLowerCase().includes(searchVal));
-                return matchesCategory && matchesSearch;
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            
+            const filtered = deals.filter(d => {
+                const matchCat = currentCat === 'الكل' || d.cat === currentCat;
+                const matchSearch = d.store.toLowerCase().includes(search) || d.title.toLowerCase().includes(search) || (d.desc && d.desc.toLowerCase().includes(search));
+                return matchCat && matchSearch;
             });
 
             if (filtered.length === 0) {
-                container.innerHTML = `
-                    <div class="col-span-full py-16 text-center space-y-3">
-                        <span class="text-4xl">🛍️</span>
-                        <p class="theme-text-muted text-sm">لا توجد عروض ألبسة مضافة في هذا القسم حالياً.</p>
-                    </div>
-                `;
+                container.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding: 40px; color:var(--text-muted);">لا توجد عروض ألبسة مضافة حالياً.</div>`;
                 return;
             }
 
-            container.innerHTML = filtered.map((deal) => `
-                <div class="theme-card border rounded-2xl overflow-hidden shadow-sm hover:border-amber-500/60 transition flex flex-col justify-between">
+            container.innerHTML = filtered.map((d) => `
+                <div class="card">
                     <div>
-                        ${deal.image ? `<div class="h-48 w-full overflow-hidden bg-zinc-950"><img src="${deal.image}" alt="${deal.title}" class="h-full w-full object-cover"></div>` : ''}
-                        <div class="p-4 space-y-2">
-                            <div class="flex justify-between items-start">
-                                <span class="bg-amber-500/15 text-amber-600 dark:text-amber-500 text-[10px] font-bold px-2.5 py-1 rounded-full border border-amber-500/20">${deal.category}</span>
-                                <span class="text-xs theme-text-muted font-medium">🏪 ${deal.store}</span>
-                            </div>
-                            <h3 class="font-bold text-base">${deal.title}</h3>
-                            ${deal.desc ? `<p class="text-xs theme-text-muted leading-relaxed">${deal.desc}</p>` : ''}
+                        ${d.img ? `<img src="${d.img}">` : ''}
+                        <div class="card-body">
+                            <span class="badge">${d.cat}</span>
+                            <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:2px;">🏪 ${d.store}</div>
+                            <div class="card-title">${d.title}</div>
+                            ${d.desc ? `<div class="card-desc">${d.desc}</div>` : ''}
                         </div>
                     </div>
-                    <div class="p-4 pt-0 mt-2 space-y-3">
-                        <div class="pt-3 border-t border-zinc-700/20 flex justify-between items-center">
-                            <div class="flex items-baseline gap-2">
-                                <span class="text-lg font-black text-amber-500">${deal.newPrice}</span>
-                                ${deal.oldPrice ? `<span class="text-xs theme-text-muted line-through">${deal.oldPrice}</span>` : ''}
-                            </div>
+                    <div class="card-footer">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span class="price">${d.newP}</span>
+                            ${d.oldP ? `<span style="text-decoration:line-through; font-size:0.75rem; color:var(--text-muted);">${d.oldP}</span>` : ''}
                         </div>
-                        ${deal.whatsapp ? `
-                            <a href="https://wa.me/${deal.whatsapp}?text=مرحباً، أود الاستفسار عن عرض (${deal.title}) من متجر ${deal.store}" target="_blank" 
-                               class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2 rounded-xl text-xs transition flex items-center justify-center gap-1.5 shadow-xs">
-                                <span>💬</span> تواصل مع التاجر عبر واتساب
-                            </a>
-                        ` : ''}
+                        ${d.whatsapp ? `<a href="https://wa.me/${d.whatsapp}?text=مرحباً، أود الاستفسار عن عرض (${d.title}) من متجر ${d.store}" target="_blank" class="whatsapp-btn">💬 تواصل عبر الواتساب</a>` : ''}
                     </div>
                 </div>
             `).join('');
         }
 
-        function renderMerchantList() {
-            const list = document.getElementById('merchantDealsList');
-            const merchantDeals = deals.filter(d => currentMerchant.pin === ADMIN_MASTER_PIN || d.store === currentMer
+        function filterCat(cat, btn) {
+            currentCat = cat;
+            document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+            btn.classList.add('active');
+            renderDeals();
+        }
+
+        function resetFilters() {
+            document.getElementById('searchInput').value = '';
+            document.querySelectorAll('.pill')[0].click();
+        }
+
+        function openPinModal() {
+            document.getElementById('pinInput').value = '';
+            document.getElementById('errMsg').style.display = 'none';
+            document.getElementById('pinModal').classList.add('show');
+            checkLock();
+        }
+
+        function closeModals() {
+            document.querySelectorAll('.modal').forEach(m => m.classList.remove('show'));
+        }
+
+        function verifyPin() {
+            if (checkLock()) return;
+            const pin = document.getElementById('pinInput').value.trim();
+            const merchant = merchants.find(m => m.pin === pin);
+            
+            if (merchant) {
+                attempts = 0;
+                localStorage.removeItem('trz_attempts');
+                activeMerchant = merchant;
+                closeModals();
+                document.getElementById('storeField').value = merchant.store;
+                document.getElementById('dashTitle').textContent = `لوحة تحكم: ${merchant.store}`;
+                
+                const adminSec = document.getElementById('adminSection');
+                if (merchant.pin === ADMIN_KEY) {
+                    adminSec.style.display = 'block';
+                    renderAdminList();
+                } else {
+                    adminSec.style.display = 'none';
+                }
+
+                document.getElementById('dashboardModal').classList.add('show');
+                renderMerchantDeals();
+            } else {
+                attempts++;
+                localStorage.setItem('trz_attempts', attempts);
+                const err = document.getElementById('errMsg');
+                if (attempts >= 3) {
+                    lockUntil = Date.now() + (5 * 60 * 1000);
+                    localStorage.setItem('trz_lock', lockUntil);
+                    checkLock();
+                } else {
+                    err.textContent = `مفتاح خاطئ! متبقي ${3 - attempts} محاولات قبل القفل المؤقت.`;
+                    err.style.display = 'block';
+                }
+            }
+        }
+
+        function renderAdminList() {
+            document.getElementById('adminList').innerHTML = merchants.map((m, i) => `
+                <div style="display:flex; justify-content:space-between; align-items:center; background:var(--bg-card); border:1
