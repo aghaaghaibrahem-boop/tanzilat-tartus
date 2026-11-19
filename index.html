@@ -16,7 +16,6 @@
       --text-muted: #9ca3af;
       --accent: #d97706;
       --accent-orange: #ea580c;
-      --accent-hover: #b45309;
       --sale-badge: #991b1b;
       --success: #16a34a;
       --danger: #dc2626;
@@ -40,14 +39,16 @@
       margin: 0;
       background-color: var(--bg-main);
       color: var(--text-main);
-      transition: background-color 0.25s ease, color 0.25s ease;
+      transition: background-color 0.2s ease, color 0.2s ease;
     }
 
-    /* الهيدر العلوي كما في الصورة */
     header {
       background-color: var(--bg-card);
       border-bottom: 1px solid var(--border-color);
       padding: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 30;
     }
 
     .header-inner {
@@ -76,7 +77,6 @@
       line-height: 1.25;
       text-align: center;
       cursor: pointer;
-      box-shadow: 0 4px 12px rgba(217, 119, 6, 0.22);
     }
 
     .theme-btn {
@@ -93,23 +93,45 @@
       cursor: pointer;
     }
 
+    /* هوية تنزيلات طرطوس مع الحقيبة الدائرية */
+    .brand-lockup {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-bag-circle {
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #ea580c, #d97706);
+      border: 2px solid rgba(255, 255, 255, 0.22);
+      box-shadow: 0 6px 16px rgba(234, 88, 12, 0.28);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .brand-bag-circle svg {
+      width: 26px;
+      height: 26px;
+      fill: none;
+      stroke: #ffffff;
+      stroke-width: 2.2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
     .brand-title {
       text-align: right;
       line-height: 1.15;
     }
 
-    .brand-title .line-1 {
-      display: block;
-      font-size: 1.65rem;
-      font-weight: 800;
-      color: var(--accent);
-    }
-
+    .brand-title .line-1,
     .brand-title .line-2 {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 1.65rem;
+      display: block;
+      font-size: 1.5rem;
       font-weight: 800;
       color: var(--accent);
     }
@@ -117,10 +139,9 @@
     .container {
       max-width: 960px;
       margin: 0 auto;
-      padding: 14px 16px 32px;
+      padding: 14px 16px 36px;
     }
 
-    /* حقل البحث */
     .search-box input {
       width: 100%;
       padding: 13px 16px;
@@ -132,11 +153,6 @@
       outline: none;
     }
 
-    .search-box input:focus {
-      border-color: var(--accent);
-    }
-
-    /* شريط الأقسام الأفقية المطابق للصورة */
     .categories-bar {
       display: flex;
       align-items: center;
@@ -144,7 +160,6 @@
       overflow-x: auto;
       padding: 14px 2px 8px;
       scrollbar-width: none;
-      -ms-overflow-style: none;
     }
 
     .categories-bar::-webkit-scrollbar {
@@ -165,17 +180,14 @@
       font-size: 0.95rem;
       cursor: pointer;
       white-space: nowrap;
-      transition: all 0.2s ease;
     }
 
     .cat-pill.active {
       background: linear-gradient(135deg, #ea580c, #d97706);
       color: #ffffff;
       border-color: transparent;
-      box-shadow: 0 4px 10px rgba(217, 119, 6, 0.25);
     }
 
-    /* لوحة التاجر */
     .panel {
       background: var(--bg-card);
       border: 1px solid var(--border-color);
@@ -491,15 +503,22 @@
         <button type="button" class="theme-btn" id="themeToggleBtn" title="تبديل الوضع">🌙</button>
       </div>
 
-      <div class="brand-title">
-        <span class="line-1">تنزيلات</span>
-        <span class="line-2">طرطوس 👔</span>
+      <div class="brand-lockup">
+        <span class="brand-bag-circle" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path d="M6 7h12l1 13H5L6 7z"></path>
+            <path d="M9 7V5a3 3 0 0 1 6 0v2"></path>
+          </svg>
+        </span>
+        <div class="brand-title">
+          <span class="line-1">تنزيلات</span>
+          <span class="line-2">طرطوس</span>
+        </div>
       </div>
     </div>
   </header>
 
   <main class="container">
-    <!-- بوابة إضافة العروض -->
     <section class="panel hidden" id="merchantPanel">
       <h2 style="margin-top: 0;">إضافة عرض جديد</h2>
 
@@ -570,12 +589,10 @@
       </form>
     </section>
 
-    <!-- حقل البحث -->
     <div class="search-box">
       <input type="text" id="searchInput" placeholder="ابحث عن قطعة، متجر، أو عرض ألبسة..." />
     </div>
 
-    <!-- شريط الأقسام الأفقية كما في الصورة -->
     <div class="categories-bar" id="categoriesBar">
       <button type="button" class="cat-pill active" data-category="الكل">الكل</button>
       <button type="button" class="cat-pill" data-category="ألبسة رجالية">👔 ألبسة رجالية</button>
@@ -585,153 +602,140 @@
       <button type="button" class="cat-pill" data-category="إكسسوارات">🕶️ إكسسوارات</button>
     </div>
 
-    <!-- عرض المنتجات -->
     <div class="products-grid" id="productsGrid"></div>
     <div class="empty-state" id="emptyState">لا توجد عروض ألبسة مضافة حالياً.</div>
   </main>
 
   <script>
-    const STORAGE_KEY = 'tanzilat_tartus_products_v2';
-    const THEME_KEY = 'tanzilat_tartus_theme_v1';
+    (function () {
+      const STORAGE_KEY = 'tanzilat_tartus_products_v2';
+      const THEME_KEY = 'tanzilat_tartus_theme_v1';
 
-    let products = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-    let draftImages = [];
-    let activeCategory = 'الكل';
-    const cardImageIndices = {};
-
-    const merchantPanel = document.getElementById('merchantPanel');
-    const toggleMerchantBtn = document.getElementById('toggleMerchantBtn');
-    const themeToggleBtn = document.getElementById('themeToggleBtn');
-    const productForm = document.getElementById('productForm');
-    const productImagesInput = document.getElementById('productImages');
-    const imagesPreview = document.getElementById('imagesPreview');
-    const imagesCountLabel = document.getElementById('imagesCountLabel');
-    const clearImagesBtn = document.getElementById('clearImagesBtn');
-    const productsGrid = document.getElementById('productsGrid');
-    const emptyState = document.getElementById('emptyState');
-    const searchInput = document.getElementById('searchInput');
-    const categoryPills = document.querySelectorAll('.cat-pill');
-
-    const isDiscountedCheckbox = document.getElementById('isDiscounted');
-    const oldPriceInput = document.getElementById('oldPrice');
-    const currentPriceInput = document.getElementById('currentPrice');
-
-    // الوضع الافتراضي فاتح كما في الصورة
-    if (localStorage.getItem(THEME_KEY) === 'dark') {
-      document.body.classList.remove('light-mode');
-      themeToggleBtn.textContent = '☀️';
-    } else {
-      document.body.classList.add('light-mode');
-      themeToggleBtn.textContent = '🌙';
-    }
-
-    themeToggleBtn.addEventListener('click', () => {
-      document.body.classList.toggle('light-mode');
-      const isLight = document.body.classList.contains('light-mode');
-      localStorage.setItem(THEME_KEY, isLight ? 'light' : 'dark');
-      themeToggleBtn.textContent = isLight ? '🌙' : '☀️';
-    });
-
-    toggleMerchantBtn.addEventListener('click', () => {
-      merchantPanel.classList.toggle('hidden');
-    });
-
-    // تفعيل أزرار الأقسام الأفقية
-    categoryPills.forEach((pill) => {
-      pill.addEventListener('click', () => {
-        categoryPills.forEach((p) => p.classList.remove('active'));
-        pill.classList.add('active');
-        activeCategory = pill.dataset.category;
-        renderProducts();
-      });
-    });
-
-    const syncDiscountAuto = () => {
-      const oldVal = parseFloat(oldPriceInput.value);
-      const currVal = parseFloat(currentPriceInput.value);
-      if (!isNaN(oldVal) && !isNaN(currVal) && oldVal > currVal) {
-        isDiscountedCheckbox.checked = true;
-      }
-    };
-    oldPriceInput.addEventListener('input', syncDiscountAuto);
-    currentPriceInput.addEventListener('input', syncDiscountAuto);
-
-    function compressImageFile(file, maxWidth = 900, quality = 0.72) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = (ev) => {
-          const img = new Image();
-          img.onload = () => {
-            const scale = Math.min(1, maxWidth / img.width);
-            const canvas = document.createElement('canvas');
-            canvas.width = Math.round(img.width * scale);
-            canvas.height = Math.round(img.height * scale);
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-            resolve(canvas.toDataURL('image/jpeg', quality));
-          };
-          img.onerror = reject;
-          img.src = ev.target.result;
-        };
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
-    }
-
-    productImagesInput.addEventListener('change', async (e) => {
-      const files = Array.from(e.target.files || []).filter((f) => f.type.startsWith('image/'));
-      if (!files.length) return;
-
-      for (const file of files) {
+      function readStorage(key, fallback) {
         try {
-          const compressed = await compressImageFile(file);
-          draftImages.push(compressed);
-        } catch (err) {
-          console.error('خطأ في قراءة صورة:', file.name, err);
+          return localStorage.getItem(key) ?? fallback;
+        } catch (e) {
+          return fallback;
         }
       }
 
-      productImagesInput.value = '';
-      renderDraftImages();
-    });
+      function writeStorage(key, value) {
+        try {
+          localStorage.setItem(key, value);
+          return true;
+        } catch (e) {
+          return false;
+        }
+      }
 
-    function renderDraftImages() {
-      imagesPreview.innerHTML = '';
-      imagesCountLabel.textContent =
-        draftImages.length === 0
-          ? 'لم يتم اختيار صور بعد — يمكنك إضافة أي عدد من الصور.'
-          : `عدد الصور المضافة لهذه القطعة: ${draftImages.length}`;
+      let products = [];
+      try {
+        const parsed = JSON.parse(readStorage(STORAGE_KEY, '[]'));
+        products = Array.isArray(parsed) ? parsed : [];
+      } catch (e) {
+        products = [];
+      }
 
-      draftImages.forEach((src, index) => {
-        const item = document.createElement('div');
-        item.className = 'preview-item';
+      let draftImages = [];
+      let activeCategory = 'الكل';
+      const cardImageIndices = {};
 
-        const img = document.createElement('img');
-        img.src = src;
-        img.alt = `صورة ${index + 1}`;
+      const merchantPanel = document.getElementById('merchantPanel');
+      const toggleMerchantBtn = document.getElementById('toggleMerchantBtn');
+      const themeToggleBtn = document.getElementById('themeToggleBtn');
+      const productForm = document.getElementById('productForm');
+      const productImagesInput = document.getElementById('productImages');
+      const imagesPreview = document.getElementById('imagesPreview');
+      const imagesCountLabel = document.getElementById('imagesCountLabel');
+      const clearImagesBtn = document.getElementById('clearImagesBtn');
+      const productsGrid = document.getElementById('productsGrid');
+      const emptyState = document.getElementById('emptyState');
+      const searchInput = document.getElementById('searchInput');
+      const categoriesBar = document.getElementById('categoriesBar');
 
-        const badge = document.createElement('span');
-        badge.className = 'img-badge';
-        badge.textContent = `#${index + 1}`;
+      const isDiscountedCheckbox = document.getElementById('isDiscounted');
+      const oldPriceInput = document.getElementById('oldPrice');
+      const currentPriceInput = document.getElementById('currentPrice');
 
-        const delBtn = document.createElement('button');
-        delBtn.type = 'button';
-        delBtn.className = 'remove-img-btn';
-        delBtn.textContent = '×';
-        delBtn.title = 'حذف الصورة';
-        delBtn.addEventListener('click', () => {
-          draftImages.splice(index, 1);
-          renderDraftImages();
+      function applyTheme(isLight) {
+        document.body.classList.toggle('light-mode', isLight);
+        if (themeToggleBtn) {
+          themeToggleBtn.textContent = isLight ? '🌙' : '☀️';
+        }
+      }
+
+      const savedTheme = readStorage(THEME_KEY, 'dark');
+      applyTheme(savedTheme === 'light');
+
+      if (themeToggleBtn) {
+        themeToggleBtn.addEventListener('click', function () {
+          const nextIsLight = !document.body.classList.contains('light-mode');
+          applyTheme(nextIsLight);
+          writeStorage(THEME_KEY, nextIsLight ? 'light' : 'dark');
         });
+      }
 
-        item.appendChild(img);
-        item.appendChild(badge);
-        item.appendChild(delBtn);
-        imagesPreview.appendChild(item);
-      });
-    }
+      if (toggleMerchantBtn && merchantPanel) {
+        toggleMerchantBtn.addEventListener('click', function () {
+          merchantPanel.classList.toggle('hidden');
+        });
+      }
 
-    clearImagesBtn.addEventListener('click', () => {
-      draftImages = [];
-      renderDraftImages();
-    });
+      if (categoriesBar) {
+        categoriesBar.addEventListener('click', function (e) {
+          const pill = e.target.closest('.cat-pill');
+          if (!pill) return;
+
+          categoriesBar.querySelectorAll('.cat-pill').forEach(function (el) {
+            el.classList.remove('active');
+          });
+          pill.classList.add('active');
+          activeCategory = pill.getAttribute('data-category') || 'الكل';
+          renderProducts();
+        });
+      }
+
+      function syncDiscountAuto() {
+        if (!oldPriceInput || !currentPriceInput || !isDiscountedCheckbox) return;
+        const oldVal = parseFloat(oldPriceInput.value);
+        const currVal = parseFloat(currentPriceInput.value);
+        if (!isNaN(oldVal) && !isNaN(currVal) && oldVal > currVal) {
+          isDiscountedCheckbox.checked = true;
+        }
+      }
+
+      if (oldPriceInput) oldPriceInput.addEventListener('input', syncDiscountAuto);
+      if (currentPriceInput) currentPriceInput.addEventListener('input', syncDiscountAuto);
+
+      function compressImageFile(file, maxWidth = 900, quality = 0.72) {
+        return new Promise(function (resolve, reject) {
+          const reader = new FileReader();
+          reader.onload = function (ev) {
+            const img = new Image();
+            img.onload = function () {
+              const scale = Math.min(1, maxWidth / (img.width || maxWidth));
+              const canvas = document.createElement('canvas');
+              canvas.width = Math.max(1, Math.round((img.width || maxWidth) * scale));
+              canvas.height = Math.max(1, Math.round((img.height || maxWidth) * scale));
+              const ctx = canvas.getContext('2d');
+              ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+              resolve(canvas.toDataURL('image/jpeg', quality));
+            };
+            img.onerror = reject;
+            img.src = ev.target.result;
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+      }
+
+      if (productImagesInput) {
+        productImagesInput.addEventListener('change', async function (e) {
+          const files = Array.from(e.target.files || []).filter(function (f) {
+            return f.type && f.type.startsWith('image/');
+          });
+          if (!files.length) return;
+
+          for (const file of files) {
+            try {
+              const compr
