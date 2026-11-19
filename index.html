@@ -93,7 +93,6 @@
       cursor: pointer;
     }
 
-    /* هوية تنزيلات طرطوس مع الحقيبة الدائرية */
     .brand-lockup {
       display: flex;
       align-items: center;
@@ -738,4 +737,5 @@
 
           for (const file of files) {
             try {
-              const compr
+              const compressed = await compressImageFile(file);
+          
